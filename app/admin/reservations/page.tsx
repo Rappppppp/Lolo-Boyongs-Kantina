@@ -57,7 +57,7 @@ export default function ReservationsAdminPage() {
   const filteredReservations = filter === "all" ? reservations : reservations.filter((r) => r.status === filter)
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-foreground mb-4">Reservations</h2>
 

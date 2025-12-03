@@ -1,3 +1,4 @@
+
 export interface AppConfig {
   name: string;
   description: string;
@@ -11,8 +12,8 @@ export interface AppConfig {
 
   urls: {
     baseUrl: string;
+    appUrl?: string;
     apiUrl: string;
-    docsUrl?: string;
   };
 
   branding: {
@@ -41,8 +42,8 @@ export const appConfig: AppConfig = {
 
   urls: {
     baseUrl: "https://myrestaurant.com",
-    apiUrl: "https://api.myrestaurant.com/v1",
-    docsUrl: "https://docs.myrestaurant.com",
+    appUrl: process.env.NEXT_PUBLIC_APP_URL ?? '',
+    apiUrl: process.env.NEXT_PUBLIC_API_URL ?? '',
   },
 
   branding: {

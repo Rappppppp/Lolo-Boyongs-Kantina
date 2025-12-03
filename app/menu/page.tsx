@@ -4,6 +4,7 @@ import { useState } from "react"
 import Navigation from "@/components/navigation"
 import MenuSection from "@/components/menu-section"
 import OrderCart from "@/components/order-cart"
+import { appConfig } from "@/config/app.config"
 
 export default function MenuPage() {
   const [cartOpen, setCartOpen] = useState(false)

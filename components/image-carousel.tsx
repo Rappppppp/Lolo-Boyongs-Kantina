@@ -29,6 +29,11 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
           src={displayImages[currentIndex] || "/placeholder.svg"}
           alt={`Menu item carousel image ${currentIndex + 1}`}
           className="w-full h-full object-cover transition-opacity duration-500"
+          onError={(e) => {
+            const target = e.currentTarget as HTMLImageElement;
+            target.onerror = null; // prevent infinite loop if placeholder fails
+            target.src = "/resto/1.jpg";
+          }}
         />
 
         {/* Overlay gradient for visual depth */}
@@ -60,9 +65,8 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex ? "bg-primary w-6" : "bg-white/60 hover:bg-white/90"
-                }`}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-primary w-6" : "bg-white/60 hover:bg-white/90"
+                  }`}
                 aria-label={`Go to image ${index + 1}`}
               />
             ))}

@@ -12,6 +12,7 @@ interface CartItem {
 interface User {
   id: string
   email: string
+  role: string
   firstName: string
   lastName: string
 }
@@ -20,6 +21,13 @@ interface VerificationState {
   email: string
   isVerifying: boolean
 }
+
+export interface Category {
+  id: number
+  name: string
+  description: string
+}
+
 
 interface Store {
   // Auth
@@ -38,6 +46,13 @@ interface Store {
   clearCart: () => void
   getCartTotal: () => number
   getCartCount: () => number
+
+  // Food Categories
+  categories: Category[]
+  setCategories: (cats: Category[]) => void
+  addCategory: (category: Omit<Category, "id">) => void
+  updateCategory: (id: number, updates: Partial<Omit<Category, "id">>) => void
+  removeCategory: (id: number) => void
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -87,6 +102,26 @@ export const useStore = create<Store>((set, get) => ({
   getCartCount: () => {
     return get().cartItems.reduce((sum, item) => sum + item.quantity, 0)
   },
+
+  // Food Categories
+  categories: [],
+  setCategories: (cats) => set({ categories: cats }), // 🐈 😺
+  addCategory: (category) =>
+    set((state) => ({
+      categories: [...state.categories, { ...category, id: Date.now() }],
+    })),
+
+  updateCategory: (id, updates) =>
+    set((state) => ({
+      categories: state.categories.map((cat) =>
+        cat.id === id ? { ...cat, ...updates } : cat
+      ),
+    })),
+
+  removeCategory: (id) =>
+    set((state) => ({
+      categories: state.categories.filter((cat) => cat.id !== id),
+    })),
 }))
 
 // Session State

@@ -14,7 +14,7 @@ const menuItems = [
 
 export default function MenuManagementPage() {
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-foreground mb-2">Menu Management</h2>

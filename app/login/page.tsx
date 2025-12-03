@@ -7,51 +7,74 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useStore } from "@/lib/store"
 import Navigation from "@/components/navigation"
-import { Mail, Lock } from "lucide-react"
-import { appConfig } from "@/config/app.config"
+import { Mail, Lock, EyeOff, Eye, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { loginSchema } from "@/lib/schemas"
+import { useLogin } from "@/hooks/auth/useLogin"
 
 export default function LoginPage() {
+  const { loading, login } = useLogin();
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const { setUser } = useStore()
 
   const router = useRouter()
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrors({})
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
+    setErrors({}); // reset errors
+
+    // --- ZOD VALIDATION ---
     const result = loginSchema.safeParse({ email, password });
 
     if (!result.success) {
-      // Map Zod errors to state
-      const fieldErrors: { email?: string; password?: string } = {};
+      const zodErrors: any = {};
       result.error.errors.forEach((err) => {
-        if (err.path[0] === "email") fieldErrors.email = err.message;
-        if (err.path[0] === "password") fieldErrors.password = err.message;
+        const field = err.path[0];
+        zodErrors[field] = err.message;
       });
-      setErrors(fieldErrors);
+      setErrors(zodErrors);
       return;
     }
 
-    // Simulated login
-    const user = {
-      id: "1",
-      email,
-      firstName: email.split("@")[0],
-      lastName: email.split("@")[0],
-    }
+    // --- API REQUEST ---
+    try {
+      await login(email, password);
+      router.push(redirect || "/");
+    } catch (err: any) {
 
-    setUser(user)
-    router.push(redirect || "/");
-  }
+      // --- Laravel validation errors ---
+      if (err?.errors) {
+        const formatted: Record<string, string> = {};
+        for (const key in err.errors) {
+          formatted[key] = err.errors[key][0];
+        }
+        setErrors(formatted);
+        return;
+      }
+
+      // --- "Invalid credentials" case ---
+      if (err?.error === "Invalid credentials") {
+        setErrors({
+          email: "Invalid email or password",
+          password: "Invalid email or password",
+        });
+        return;
+      }
+
+      // --- Fallback unexpected error ---
+      setErrors({
+        email: err?.message || "Login failed",
+        password: "",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,9 +100,9 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.email ? "border-destructive" : "border-border"
+                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary ${errors.email ? "border-destructive" : "border-border"
                     }`}
-                  placeholder="you@example.com"
+                  placeholder="example.lolo@boyongs.com"
                 />
                 {errors.email && <p className="text-destructive text-sm">{errors.email}</p>}
               </div>
@@ -89,19 +112,33 @@ export default function LoginPage() {
                   <Lock className="w-4 h-4" />
                   Password
                 </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.password ? "border-destructive" : "border-border"
-                    }`}
-                  placeholder="••••••••"
-                />
+
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary ${errors.password ? "border-destructive" : "border-border"
+                      }`}
+                    placeholder="••••••••"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 inset-y-0 flex items-center text-muted-foreground hover:text-foreground transition cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+
                 {errors.password && <p className="text-destructive text-sm">{errors.password}</p>}
               </div>
 
               <Button type="submit" className="w-full" size="lg">
-                Sign In
+                {
+                  loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"
+                }
               </Button>
             </form>
 

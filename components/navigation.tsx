@@ -1,35 +1,50 @@
 "use client"
 
-import { ShoppingCart, Menu, X, LogOut, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { useStore } from "@/lib/store"
 import Link from "next/link"
+
+import { ShoppingCart, Menu, X, LogOut, User, Loader2 } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+
+import { useStore } from "@/lib/store"
+
 import { appConfig } from "@/config/app.config"
+
+import { useLogout } from "@/hooks/auth/useLogout"
+import LogoutModal from "./auth/logout-modal"
+import { usePathname, useRouter } from "next/navigation"
+import { useToast } from "./ui/use-toast"
 
 interface NavigationProps {
   onCartClick: () => void
 }
 
 export default function Navigation({ onCartClick }: NavigationProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { user, setUser, getCartCount } = useStore()
-  const cartCount = getCartCount()
+  const { user, getCartCount } = useStore()
+  const { loading } = useLogout();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { toast } = useToast()
 
-  const handleLogout = () => {
-    setUser(null)
-  }
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const cartCount = getCartCount()
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-border shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        
+
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition">
           <img src="/app-logo.jpg" alt="Lolo Boyong's Kantina" className="w-12 h-12 rounded-full" />
           <span className="text-xl font-bold text-foreground">{appConfig.name}</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
+          {user?.role === "admin" && (
+            <Link href="/admin" className="text-foreground hover:text-primary transition font-medium">
+              Admin
+            </Link>
+          )}
           <Link href="/" className="text-foreground hover:text-primary transition font-medium">
             Home
           </Link>
@@ -46,7 +61,27 @@ export default function Navigation({ onCartClick }: NavigationProps) {
 
         <div className="flex items-center gap-4">
           {user && (
-            <Button variant="outline" size="icon" onClick={onCartClick} className="relative bg-transparent">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                if (cartCount <= 0) {
+                  if (pathname.includes("menu")) {
+                    toast({
+                      title: "You have items in your cart",
+                      description: "Please select a menu item to proceed",
+                      className: "bg-yellow-500 text-white border-yellow-600",
+                    });
+                  } else {
+                    router.push("/menu");
+                  }
+                } else {
+                  onCartClick();
+                }
+              }}
+              className="relative bg-transparent"
+            >
+
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
@@ -61,12 +96,18 @@ export default function Navigation({ onCartClick }: NavigationProps) {
               <Button variant="outline" size="sm" asChild>
                 <Link href="/profile" className="flex items-center gap-2">
                   <User className="w-4 h-4" />
-                  {user.name}
+                  {user.firstName}
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="w-5 h-5" />
-              </Button>
+              <LogoutModal>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <LogOut className="w-5 h-5" />}
+                </Button>
+              </LogoutModal>
             </div>
           ) : (
             <div className="hidden md:flex items-center gap-2">
@@ -105,10 +146,12 @@ export default function Navigation({ onCartClick }: NavigationProps) {
                 <Link href="/profile" className="block text-foreground hover:text-primary font-medium">
                   Profile
                 </Link>
-                <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
+                <LogoutModal>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </Button>
+                </LogoutModal>
               </>
             )}
             {!user && (

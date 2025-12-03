@@ -12,16 +12,15 @@ import { useStore } from "@/lib/store"
 import { useRouter } from "next/navigation"
 
 export default function ReservationsPage() {
+  // very important
+    const [isReady, setIsReady] = useState(false);
+
   const { user } = useStore();
   const router = useRouter();
-  const [isReady, setIsReady] = useState(false);
 
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
   const [guests, setGuests] = useState("2")
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [phone, setPhone] = useState("")
   const [submitted, setSubmitted] = useState(false)
 
   useEffect(() => {
@@ -85,6 +84,17 @@ export default function ReservationsPage() {
             <CardTitle>Reservation Details</CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Availability Info */}
+            <Card className="bg-primary/5 border-primary/20 mb-6" >
+              <CardContent>
+                <h3 className="font-semibold text-foreground mb-3">Availability</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• Open Monday - Sunday: 10:00 AM - 8:00 PM</li>
+                  <li>• Holidays: Call for details</li>
+                </ul>
+              </CardContent>
+            </Card>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Date and Time Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,44 +149,6 @@ export default function ReservationsPage() {
                 )}
               </div>
 
-              {/* Personal Info */}
-              <div className="space-y-4 pt-6 border-t border-border">
-                <h3 className="font-semibold text-foreground">Your Information</h3>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
-                  <Input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="John Doe"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Email</label>
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="john@example.com"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Phone Number</label>
-                  <Input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+1 (555) 123-4567"
-                    required
-                  />
-                </div>
-              </div>
-
               {/* Submission Status */}
               {submitted && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
@@ -197,19 +169,7 @@ export default function ReservationsPage() {
           </CardContent>
         </Card>
 
-        {/* Availability Info */}
-        <Card className="mt-8 bg-primary/5 border-primary/20">
-          <CardContent className="p-6">
-            <h3 className="font-semibold text-foreground mb-3">Availability</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>• Open Tuesday - Thursday: 5:00 PM - 10:00 PM</li>
-              <li>• Open Friday - Saturday: 5:00 PM - 11:00 PM</li>
-              <li>• Open Sunday: 5:00 PM - 9:00 PM</li>
-              <li>• Closed Mondays</li>
-              <li>• Private events available - Contact us for details</li>
-            </ul>
-          </CardContent>
-        </Card>
+
       </div>
     </div>
   )

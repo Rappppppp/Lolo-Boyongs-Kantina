@@ -26,7 +26,7 @@ export default function OrdersPage() {
   const filteredOrders = filter === "all" ? orders : orders.filter((o) => o.status === filter)
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-foreground mb-4">Order Management</h2>
 

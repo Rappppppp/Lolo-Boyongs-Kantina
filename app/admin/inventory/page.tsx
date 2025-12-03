@@ -92,7 +92,7 @@ export default function InventoryPage() {
   const totalValue = inventoryItems.reduce((sum, item) => sum + item.stock * 15, 0) // Assuming avg value of $15
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-foreground mb-2">Inventory Management</h2>
         <p className="text-muted-foreground">Monitor stock levels, track items, and manage reorders</p>
