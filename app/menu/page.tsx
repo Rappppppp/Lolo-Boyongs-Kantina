@@ -121,10 +121,10 @@ export default function MenuPage() {
       <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 py-12 border-b-3 border-primary/20">
         <div className="max-w-6xl mx-auto px-4">
           <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-            Our Culinary Collection
+            Explore Our Menu
           </h1>
           <p className="text-lg text-muted-foreground font-medium max-w-2xl">
-            Discover exquisitely crafted dishes prepared with premium ingredients and culinary passion
+            Taste the family tradition and classic flavors of Lolo Boyong’s Kantina.
           </p>
         </div>
       </div>

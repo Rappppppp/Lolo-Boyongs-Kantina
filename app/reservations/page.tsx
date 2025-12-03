@@ -2,14 +2,20 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Calendar, Clock, Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Navigation from "@/components/navigation"
+import { useStore } from "@/lib/store"
+import { useRouter } from "next/navigation"
 
 export default function ReservationsPage() {
+  const { user } = useStore();
+  const router = useRouter();
+  const [isReady, setIsReady] = useState(false);
+
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
   const [guests, setGuests] = useState("2")
@@ -17,6 +23,17 @@ export default function ReservationsPage() {
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    if (!user) {
+      router.push(`/login?redirect=/reservations`);
+      return;
+    }
+
+    setIsReady(true);
+  }, [user, router]);
+
+  if (!isReady) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,7 +43,10 @@ export default function ReservationsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation cartCount={0} onCartClick={() => {}} />
+      <Navigation
+        // cartCount={0} 
+        onCartClick={() => { }}
+      />
 
       <div className="max-w-2xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
@@ -99,11 +119,10 @@ export default function ReservationsPage() {
                       key={num}
                       type="button"
                       onClick={() => setGuests(num.toString())}
-                      className={`flex-1 py-2 rounded-lg font-medium transition ${
-                        guests === num.toString()
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-foreground hover:bg-muted/80"
-                      }`}
+                      className={`flex-1 py-2 rounded-lg font-medium transition ${guests === num.toString()
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-foreground hover:bg-muted/80"
+                        }`}
                     >
                       {num === 6 ? "6+" : num}
                     </button>

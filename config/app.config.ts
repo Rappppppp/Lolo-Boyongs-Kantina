@@ -31,13 +31,13 @@ export interface AppConfig {
 
 export const appConfig: AppConfig = {
   name: "Lolo Boyong's Kantina",
-  description: "A modern restaurant reservation and ordering platform.",
+  description: "Lolo Boyong's Kantina was founded in 2019 by husband-and-wife team Mr. Richmond and Mrs. Joan Bonza. Named in honor of Mr. Richmond’s beloved grandfather, “Lolo Boyong”, the restaurant stands as a tribute to family, tradition, and good food.",
   version: "1.0.0",
   author: "Aro",
 
-  address: "1134 A. Mabini St, Poblacion III, Santa Cruz, 4009 Laguna, Philippines",
-  phone: "555-555-5555",
-  email: "aro@myrestaurant.com",
+  address: " Poblacion 3, Mabini Street, Sta. Cruz Laguna (Near Aglipay Church)",
+  phone: "0939-829-2110",
+  email: "loloboyong01@gmail.com",
 
   urls: {
     baseUrl: "https://myrestaurant.com",

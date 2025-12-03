@@ -10,33 +10,46 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useStore } from "@/lib/store"
 import Navigation from "@/components/navigation"
 import { User, Mail, Lock } from "lucide-react"
-import { appConfig } from "@/config/app.config"
+import { registerSchema } from "@/lib/schemas"
+import Image from "next/image"
 
 export default function RegisterPage() {
-  const [name, setName] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string | string[]>>({})
+
   const { setVerification } = useStore()
   const router = useRouter()
 
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
+    setFieldErrors({})
 
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Please fill in all fields")
-      return
-    }
+    const result = registerSchema.safeParse({
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+    })
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
-    }
+    if (!result.success) {
+      const errors: Record<string, string | string[]> = {}
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters")
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as string
+
+        if (!errors[field]) errors[field] = []
+
+          ; (errors[field] as string[]).push(err.message)
+      })
+
+      setFieldErrors(errors)
+
       return
     }
 
@@ -44,40 +57,62 @@ export default function RegisterPage() {
     router.push("/verify-email")
   }
 
+
+
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onCartClick={() => {}} />
+      <Navigation onCartClick={() => { }} />
 
-      <div className="max-w-md mx-auto px-4 py-12">
+      <div className="max-w-2xl mx-auto px-4 py-12">
         <Card className="border border-border shadow-lg">
           <CardHeader className="space-y-2 text-center">
-            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold mx-auto">
-              C
+            <div className="flex items-center justify-center text-primary-foreground font-bold mx-auto">
+              <Image src="/app-logo.jpg" alt="Logo" className="rounded-full" width={100} height={100} />
             </div>
-            <CardTitle className="text-2xl">Join {appConfig.name}</CardTitle>
-            <p className="text-sm text-muted-foreground">Create your account to start ordering</p>
+            <CardTitle className="text-xl">Create your account to start ordering</CardTitle>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-2 rounded-lg text-sm">
-                  {error}
-                </div>
-              )}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  First Name
+                </label>
+
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary
+      ${fieldErrors.firstName ? "border-destructive" : "border-border"}`}
+                  placeholder="Enter your first name"
+                />
+
+                {fieldErrors.firstName && (
+                  <p className="text-destructive text-sm">{fieldErrors.firstName}</p>
+                )}
+              </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <User className="w-4 h-4" />
-                  Full Name
+                  Last Name
                 </label>
                 <input
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="John Doe"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary
+    ${fieldErrors.lastName ? "border-destructive" : "border-border"}`}
+                  placeholder="Enter your last name"
                 />
+                {fieldErrors.lastName && (
+                  <p className="text-destructive text-sm">{fieldErrors.lastName}</p>
+                )}
+
+              </div>
               </div>
 
               <div className="space-y-2">
@@ -89,12 +124,18 @@ export default function RegisterPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="you@example.com"
+                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary
+    ${fieldErrors.email ? "border-destructive" : "border-border"}`}
+                  placeholder="Enter your email"
                 />
+                {fieldErrors.email && (
+                  <p className="text-destructive text-sm">{fieldErrors.email}</p>
+                )}
+
               </div>
 
-              <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <Lock className="w-4 h-4" />
                   Password
@@ -103,9 +144,19 @@ export default function RegisterPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="••••••••"
+                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary
+    ${fieldErrors.password ? "border-destructive" : "border-border"}`}
+                  placeholder="Enter a password"
                 />
+                {fieldErrors.password && (
+                  <div className="text-destructive text-sm space-y-1">
+                    {Array.isArray(fieldErrors.password)
+                      ? fieldErrors.password.map((msg, i) => <p key={i}>{msg}</p>)
+                      : <p>{fieldErrors.password}</p>}
+                  </div>
+                )}
+
+
               </div>
 
               <div className="space-y-2">
@@ -117,9 +168,15 @@ export default function RegisterPage() {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="••••••••"
+                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary
+    ${fieldErrors.confirmPassword ? "border-destructive" : "border-border"}`}
+                  placeholder="Confirm your password"
                 />
+                {fieldErrors.confirmPassword && (
+                  <p className="text-destructive text-sm">{fieldErrors.confirmPassword}</p>
+                )}
+
+              </div>
               </div>
 
               <Button type="submit" className="w-full" size="lg">

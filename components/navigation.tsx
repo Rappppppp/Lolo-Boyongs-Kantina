@@ -39,7 +39,7 @@ export default function Navigation({ onCartClick }: NavigationProps) {
           <Link href="/reservations" className="text-foreground hover:text-primary transition font-medium">
             Reservations
           </Link>
-          <Link href="/about" className="text-foreground hover:text-primary transition font-medium">
+          <Link href="/#about" className="text-foreground hover:text-primary transition font-medium">
             About
           </Link>
         </div>

@@ -12,7 +12,8 @@ interface CartItem {
 interface User {
   id: string
   email: string
-  name: string
+  firstName: string
+  lastName: string
 }
 
 interface VerificationState {
@@ -40,6 +41,7 @@ interface Store {
 }
 
 export const useStore = create<Store>((set, get) => ({
+  // User
   user: null,
   setUser: (user) => set({ user }),
 
@@ -85,4 +87,21 @@ export const useStore = create<Store>((set, get) => ({
   getCartCount: () => {
     return get().cartItems.reduce((sum, item) => sum + item.quantity, 0)
   },
+}))
+
+// Session State
+interface SessionState {
+  ttl: number | null      // expiration timestamp (ms)
+  setTTL: (expiresInSec: number) => void
+  clearTTL: () => void
+}
+
+export const useSessionStore = create<SessionState>((set) => ({
+  ttl: null,
+  setTTL: (expiresInSec) => {
+    const now = Date.now()
+    const expiration = now + expiresInSec * 1000
+    set({ ttl: expiration })
+  },
+  clearTTL: () => set({ ttl: null }),
 }))
