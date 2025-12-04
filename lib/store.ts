@@ -28,6 +28,16 @@ export interface Category {
   description: string
 }
 
+export type Status = "good" | "low" | "critical"
+
+export interface InventoryItem {
+  id: number
+  name: string
+  unit: string
+  current_stock: number
+  reorder_level: number | null
+  status: Status
+}
 
 interface Store {
   // Auth
@@ -53,6 +63,13 @@ interface Store {
   addCategory: (category: Omit<Category, "id">) => void
   updateCategory: (id: number, updates: Partial<Omit<Category, "id">>) => void
   removeCategory: (id: number) => void
+
+  // Inventory
+  inventory: InventoryItem[];
+  setInventory: (items: InventoryItem[]) => void;
+  addInventory: (item: Omit<InventoryItem, "id">) => void;
+  updateInventory: (id: number, updates: Partial<Omit<InventoryItem, "id">>) => void;
+  removeInventory: (id: number) => void;
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -121,6 +138,24 @@ export const useStore = create<Store>((set, get) => ({
   removeCategory: (id) =>
     set((state) => ({
       categories: state.categories.filter((cat) => cat.id !== id),
+    })),
+
+  // Inventory
+  inventory: [],
+  setInventory: (items) => set({ inventory: items }),
+  addInventory: (item) =>
+    set((state) => ({
+      inventory: [...state.inventory, { ...item, id: Date.now() }],
+    })),
+  updateInventory: (id, updates) =>
+    set((state) => ({
+      inventory: state.inventory.map((inv) =>
+        inv.id === id ? { ...inv, ...updates } : inv
+      ),
+    })),
+  removeInventory: (id) =>
+    set((state) => ({
+      inventory: state.inventory.filter((inv) => inv.id !== id),
     })),
 }))
 

@@ -11,7 +11,9 @@ export function useLogin() {
   const { setUser } = useStore();
 
   const login = async (email: string, password: string) => {
-    const response = await callApi({ email, password });
+    const response = await callApi({
+      body: { email, password }
+    });
 
     // Save token to cookies (Laravel passport / sanctum usually returns token)
     if (response?.token && response?.user) {

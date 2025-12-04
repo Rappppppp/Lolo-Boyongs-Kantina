@@ -23,11 +23,13 @@ export function useRegister() {
 
     try {
       const response = await callApi({
-        first_name: payload.firstName,
-        last_name: payload.lastName,
-        email: payload.email,
-        password: payload.password,
-        confirm_password: payload.confirmPassword,
+        body: {
+          first_name: payload.firstName,
+          last_name: payload.lastName,
+          email: payload.email,
+          password: payload.password,
+          confirm_password: payload.confirmPassword,
+        }
       });
 
       // Optionally, redirect to login page

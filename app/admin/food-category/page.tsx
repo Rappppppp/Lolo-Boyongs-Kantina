@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Edit2, Trash2, X } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -9,17 +10,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 
 import { useStore } from "@/lib/store";
+import { getErrorMessage } from "@/lib/helpers";
+
 import { useCategories } from "@/hooks/admin/useCategories";
+import AdminSkeleton from "@/components/admin-skeleton";
 
 export default function FoodCategoryPage() {
-    const { categories, addCategory: apiAddCategory, loading, error, refresh } = useCategories();
-    const { addCategory, updateCategory, removeCategory } = useStore();
+    const { categories, addCategory, updateCategory, loading, error, refresh } = useCategories();
     const [isOpen, setIsOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState<number | null>(null);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
+
+    const { toast } = useToast();
 
     const openAddModal = () => {
         setEditingCategory(null);
@@ -39,40 +45,26 @@ export default function FoodCategoryPage() {
         if (!name) return;
 
         try {
-            if (editingCategory !== null) {
-                updateCategory(editingCategory, { name, description });
-            } else {
-                const newCat = await apiAddCategory(name, description); // ✅ fine because hook was called at top
-                addCategory(newCat);
-            }
-
             setIsOpen(false);
             setName("");
             setDescription("");
+
+            if (editingCategory !== null) {
+                await updateCategory(editingCategory, name, description);
+            } else {
+                await addCategory(name, description);
+            }
         } catch (err) {
             console.error("Failed to save category", err);
+            toast({
+                title: "Failed to save category",
+                description: getErrorMessage(err),
+                variant: "destructive",
+            });
         }
     };
 
-
-    const handleDelete = (id: number) => {
-        if (confirm("Are you sure you want to delete this category?")) removeCategory(id);
-    };
-
-    if (loading) {
-        return (
-            <div>
-                <div className="flex justify-between mb-3">
-                    <div className="space-y-3">
-                        <Skeleton className="h-16 w-76" />
-                        <Skeleton className="h-10 w-52" />
-                    </div>
-                    <Skeleton className="h-10 w-68" />
-                </div>
-                <Skeleton className="h-96 w-full" />
-            </div>
-        )
-    };
+    if (loading) return <AdminSkeleton />
     if (error) return <div className="text-red-500">{error}</div>;
 
     return (
@@ -99,7 +91,7 @@ export default function FoodCategoryPage() {
                                 <tr>
                                     <th className="text-left py-3 px-4 font-semibold">Name</th>
                                     <th className="text-left py-3 px-4 font-semibold">Description</th>
-                                    <th className="text-left py-3 px-4 font-semibold">Actions</th>
+                                    <th className="text-left py-3 px-4 font-semibold">Update</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -110,9 +102,6 @@ export default function FoodCategoryPage() {
                                         <td className="py-4 px-4 flex gap-2">
                                             <Button size="icon" variant="outline" className="w-8 h-8 bg-transparent" onClick={() => openEditModal(cat)}>
                                                 <Edit2 className="w-4 h-4" />
-                                            </Button>
-                                            <Button size="icon" variant="outline" className="w-8 h-8 text-destructive bg-transparent" onClick={() => handleDelete(cat.id)}>
-                                                <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </td>
                                     </tr>

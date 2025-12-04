@@ -40,9 +40,9 @@ export default function AdminLayout({
   const menuItems = [
     { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/admin/food-category", icon: Utensils, label: "Food Category" },
+    { href: "/admin/inventory", icon: Package, label: "Inventory" },
     { href: "/admin/menu", icon: Pizza, label: "Menu" },
     { href: "/admin/orders", icon: Clock, label: "Orders" },
-    { href: "/admin/inventory", icon: Package, label: "Inventory" },
     // { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
     // { href: "/admin/settings", icon: Settings, label: "Settings" },
   ]

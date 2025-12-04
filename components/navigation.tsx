@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 
 import { ShoppingCart, Menu, X, LogOut, User, Loader2 } from "lucide-react"
@@ -12,9 +13,8 @@ import { useStore } from "@/lib/store"
 import { appConfig } from "@/config/app.config"
 
 import { useLogout } from "@/hooks/auth/useLogout"
-import LogoutModal from "./auth/logout-modal"
-import { usePathname, useRouter } from "next/navigation"
-import { useToast } from "./ui/use-toast"
+import { useToast } from "@/components/ui/use-toast"
+import LogoutModal from "@/components/auth/logout-modal"
 
 interface NavigationProps {
   onCartClick: () => void
@@ -70,7 +70,8 @@ export default function Navigation({ onCartClick }: NavigationProps) {
                     toast({
                       title: "You have items in your cart",
                       description: "Please select a menu item to proceed",
-                      className: "bg-yellow-500 text-white border-yellow-600",
+                      className: "bg-yellow-300 text-gray-800 border-yellow-600",
+                      duration: 3000, // 3 seconds
                     });
                   } else {
                     router.push("/menu");

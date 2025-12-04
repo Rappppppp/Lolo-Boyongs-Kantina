@@ -58,3 +58,8 @@ export const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password is required"),
 });
+
+// export const addCategorySchema = z.object({
+//     name: z.string().min(3, "Name is required"),
+//     description: z.string().min(3, "Description is required"),
+// });

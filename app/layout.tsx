@@ -1,6 +1,7 @@
 import './globals.css';
 import type { ReactNode } from 'react';
 import RootLayoutClient from './RootLayoutClient';
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata = {
   title: "Lolo Boyong's Kantina",
@@ -12,6 +13,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <Toaster />
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>
