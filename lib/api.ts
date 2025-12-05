@@ -8,6 +8,7 @@ interface RequestOptions {
   body?: any;
   token?: string; // optional override
   urlOverride?: string; // optional override
+  // isFormData?: boolean; // for file upload
 }
 
 export async function apiFetch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {

@@ -70,6 +70,12 @@ interface Store {
   addInventory: (item: Omit<InventoryItem, "id">) => void;
   updateInventory: (id: number, updates: Partial<Omit<InventoryItem, "id">>) => void;
   removeInventory: (id: number) => void;
+
+  // FilePond uploads
+  filepondFiles: string[] // array of blob strings
+  setFilepondFiles: (files: string[]) => void
+  addFilepondFile: (file: string) => void
+  flushFilepond: () => void
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -157,6 +163,13 @@ export const useStore = create<Store>((set, get) => ({
     set((state) => ({
       inventory: state.inventory.filter((inv) => inv.id !== id),
     })),
+
+  // FilePond
+  filepondFiles: [],
+  setFilepondFiles: (files) => set({ filepondFiles: files }),
+  addFilepondFile: (file) =>
+    set((state) => ({ filepondFiles: [...state.filepondFiles, file] })),
+  flushFilepond: () => set({ filepondFiles: [] }),
 }))
 
 // Session State

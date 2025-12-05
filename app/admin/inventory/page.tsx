@@ -40,7 +40,11 @@ export default function InventoryPage() {
   const [reorderLevel, setReorderLevel] = useState<number | undefined>(undefined)
 
   // Status helpers
-  const lowStockItems = inventory.filter((item) => item.current_stock <= (item.reorder_level ?? 0) * 2)
+  const lowStockItems = inventory.filter((item) =>
+    item.current_stock <= (item.reorder_level ?? 0) * 0.5
+  );
+
+
   const criticalItems = inventory.filter((item) => item.status === "critical")
   // const totalValue = inventory.reduce((sum, item) => sum + item.current_stock * 15, 0)
 

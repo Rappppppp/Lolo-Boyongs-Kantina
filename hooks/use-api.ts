@@ -8,6 +8,7 @@ interface CallApiOptions {
   body?: any;
   token?: string;
   urlOverride?: string;
+  isFormData?: boolean;
 }
 
 export function useApi<T = any>(
