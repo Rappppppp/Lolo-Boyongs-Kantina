@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Lock, CreditCard, DollarSign } from "lucide-react"
+import { Lock, CreditCard, PhilippinePeso } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -96,7 +96,7 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-2 gap-4">
                     {[
                       { value: "card", label: "Credit Card", icon: CreditCard },
-                      { value: "gcash", label: "GCash", icon: DollarSign },
+                      { value: "gcash", label: "GCash", icon: PhilippinePeso },
                     ].map((method) => (
                       <label
                         key={method.value}

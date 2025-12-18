@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { TrendingUp, ShoppingCart, Users, DollarSign } from "lucide-react"
+import { TrendingUp, ShoppingCart, Users, PhilippinePeso } from "lucide-react"
 
 const dailyData = [
   { day: "Mon", orders: 12, revenue: 480 },
@@ -38,7 +38,7 @@ export default function AdminDashboard() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground">Revenue</CardTitle>
-            <DollarSign className="w-4 h-4 text-primary" />
+            <PhilippinePeso className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">$5,960</div>

@@ -16,7 +16,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
-import { TrendingUp, Clock, Flame, DollarSign } from "lucide-react"
+import { TrendingUp, Clock, Flame, PhilippinePeso } from "lucide-react"
 
 // Sales data by day
 const salesData = [
@@ -77,7 +77,7 @@ export default function AnalyticsPage() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground">Total Revenue</CardTitle>
-            <DollarSign className="w-4 h-4 text-primary" />
+            <PhilippinePeso className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">${totalRevenue.toFixed(2)}</div>
@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground">Avg Order Value</CardTitle>
-            <DollarSign className="w-4 h-4 text-primary" />
+            <PhilippinePeso className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">${avgOrderValue}</div>
