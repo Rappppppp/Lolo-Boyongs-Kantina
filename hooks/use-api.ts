@@ -20,12 +20,12 @@ export function useApi<T = any>(
   const [error, setError] = useState<string | null>(null);
 
   const callApi = async (options: CallApiOptions = {}) => {
-    const { body, token, urlOverride } = options;
+    const { body, token, urlOverride, isFormData } = options;
     setLoading(true);
     setError(null);
 
     try {
-      const response = await apiFetch<T>(endpoint, { method, body, token, urlOverride });
+      const response = await apiFetch<T>(endpoint, { method, body, token, urlOverride, isFormData });
       setData(response);
       return response;
     } catch (err: unknown) {

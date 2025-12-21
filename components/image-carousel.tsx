@@ -26,7 +26,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
       {/* Image Container */}
       <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
         <img
-          src={displayImages[currentIndex] || "/placeholder.svg"}
+          src={`${process.env.NEXT_PUBLIC_APP_URL}/storage/images/${displayImages[currentIndex]}` || "/placeholder.svg"}
           alt={`Menu item carousel image ${currentIndex + 1}`}
           className="w-full h-full object-cover transition-opacity duration-500"
           onError={(e) => {
