@@ -66,7 +66,7 @@ export default function MenuSection({ title, description, items }: MenuSectionPr
 
               {/* Footer with price and action */}
               <div className="menu-card-footer">
-                <span className="price-tag">${item.price.toFixed(2)}</span>
+                <span className="price-tag">₱{item.price.toFixed(2)}</span>
 
                 {user ? (
                   <Button

@@ -10,15 +10,13 @@ export function useFilepond() {
     const fileArray = Array.isArray(files) ? files : [files];
 
     fileArray.forEach((file) => {
-      formData.append("filepond[]", file);
+      formData.append("filepond", file);
     });
 
-    const response = await callApi({
+    return await callApi({
       body: formData,
       isFormData: true,
     });
-
-    return response;
   };
 
   return {

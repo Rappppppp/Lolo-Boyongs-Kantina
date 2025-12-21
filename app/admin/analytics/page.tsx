@@ -80,7 +80,7 @@ export default function AnalyticsPage() {
             <PhilippinePeso className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">${totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-foreground">₱{totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">This week</p>
           </CardContent>
         </Card>
@@ -102,7 +102,7 @@ export default function AnalyticsPage() {
             <PhilippinePeso className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">${avgOrderValue}</div>
+            <div className="text-2xl font-bold text-foreground">₱{avgOrderValue}</div>
             <p className="text-xs text-muted-foreground">Per transaction</p>
           </CardContent>
         </Card>
@@ -262,7 +262,7 @@ export default function AnalyticsPage() {
                   <tr key={index} className="border-b border-border hover:bg-muted/30 transition">
                     <td className="py-4 px-4 text-foreground font-medium">{dish.name}</td>
                     <td className="py-4 px-4 text-foreground">{dish.orders}</td>
-                    <td className="py-4 px-4 text-foreground font-semibold">${dish.revenue.toFixed(2)}</td>
+                    <td className="py-4 px-4 text-foreground font-semibold">₱{dish.revenue.toFixed(2)}</td>
                     <td className="py-4 px-4 text-muted-foreground">${(dish.revenue / dish.orders).toFixed(2)}</td>
                   </tr>
                 ))}

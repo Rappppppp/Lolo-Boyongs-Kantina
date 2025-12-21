@@ -1,6 +1,6 @@
 "use client"
 
-import { X, Trash2, CheckCircle, Plus, Minus } from "lucide-react"
+import { X, Trash2, CheckCircle, Plus, Minus, PhilippinePeso } from "lucide-react"
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useStore } from "@/lib/store"
@@ -18,12 +18,12 @@ export default function OrderCart({ isOpen, onClose }: OrderCartProps) {
 
   return (
     <div
-      className={`fixed right-0 top-0 h-screen w-full md:w-96 bg-card border-l border-border shadow-lg transform transition-transform duration-300 z-40 ${
+      className={`z-[9999] fixed right-0 top-0 h-screen w-full md:w-96 bg-card border-l border-border shadow-lg transform transition-transform duration-300 ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
       <div className="h-full flex flex-col overflow-auto">
-        <CardHeader className="border-b border-border flex items-center justify-between">
+        <CardHeader className="p-5 border-b border-border flex items-center justify-between">
           <CardTitle>Order Summary</CardTitle>
           <button onClick={onClose} className="md:hidden">
             <X className="w-5 h-5" />
@@ -80,15 +80,15 @@ export default function OrderCart({ isOpen, onClose }: OrderCartProps) {
           <div className="border-t border-border p-6 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Subtotal</span>
-              <span className="font-medium">${subtotal.toFixed(2)}</span>
+              <span className="font-medium flex gap-2">₱ {subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Tax (10%)</span>
-              <span className="font-medium">${(total - subtotal).toFixed(2)}</span>
+              <span className="font-medium flex gap-2">₱ {(total - subtotal).toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-base font-bold border-t border-border pt-3">
               <span>Total</span>
-              <span className="text-primary">${total.toFixed(2)}</span>
+              <span className="text-primary flex gap-2">₱ {total.toFixed(2)}</span>
             </div>
             <Button className="w-full" size="lg" asChild>
               <Link href="/checkout">Proceed to Checkout</Link>

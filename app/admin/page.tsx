@@ -41,7 +41,7 @@ export default function AdminDashboard() {
             <PhilippinePeso className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">$5,960</div>
+            <div className="text-2xl font-bold text-foreground">₱5,960</div>
             <p className="text-xs text-muted-foreground">+8% from last week</p>
           </CardContent>
         </Card>
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
             <TrendingUp className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">$39.95</div>
+            <div className="text-2xl font-bold text-foreground">₱39.95</div>
             <p className="text-xs text-muted-foreground">Steady growth</p>
           </CardContent>
         </Card>
