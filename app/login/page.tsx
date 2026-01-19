@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,9 @@ import { Mail, Lock, EyeOff, Eye, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { loginSchema } from "@/lib/schemas"
 import { useLogin } from "@/hooks/auth/useLogin"
+
+import { useStore } from "@/lib/store"
+import Cookies from 'js-cookie'
 
 export default function LoginPage() {
   const { loading, login } = useLogin();
@@ -24,6 +27,20 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
+
+  // check if user is logged in
+  const { user } = useStore();
+
+  useEffect(() => {
+    if (
+      Cookies.get('user') || 
+      Cookies.get('token') ||
+      !!user
+    ) {
+      router.push('/')
+    }
+
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

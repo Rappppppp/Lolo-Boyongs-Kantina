@@ -30,13 +30,15 @@ export function useLogin() {
       setUser(userData);
 
       Cookies.set("token", response.token, {
-        expires: 7, // store 7 days, adjust as needed
-        secure: true,
+        expires: 7,
+        secure: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? true : false,          // HTTPS required
+        sameSite: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? "none" : "lax",      // allows cross-site usage
       });
 
       Cookies.set("user", JSON.stringify(userData), {
-        expires: 7, // store 7 days, adjust as needed
-        secure: true,
+        expires: 7,
+        secure: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? true : false,          // HTTPS required
+        sameSite: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? "none" : "lax",      // allows cross-site usage
       });
 
     }

@@ -263,7 +263,7 @@ export default function AnalyticsPage() {
                     <td className="py-4 px-4 text-foreground font-medium">{dish.name}</td>
                     <td className="py-4 px-4 text-foreground">{dish.orders}</td>
                     <td className="py-4 px-4 text-foreground font-semibold">₱{dish.revenue.toFixed(2)}</td>
-                    <td className="py-4 px-4 text-muted-foreground">${(dish.revenue / dish.orders).toFixed(2)}</td>
+                    <td className="py-4 px-4 text-muted-foreground">₱{(dish.revenue / dish.orders).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

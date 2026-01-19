@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "../ui/use-toast";
 import { useStore } from "@/lib/store";
 import { useLogout } from "@/hooks/auth/useLogout";
+import Cookies from 'js-cookie'
 
 interface LogoutModalProps {
   children: React.ReactNode;
@@ -19,8 +20,11 @@ export default function LogoutModal({ children }: LogoutModalProps) {
   const { toast } = useToast();
 
   const handleLogout = async () => {
+    console.log('logout')
     setUser(null); // clear user from store
     setOpen(false); // close modal
+    Cookies.remove('user');
+    Cookies.remove('token');
     router.push("/login");
     toast({
       title: "You have been logged out",

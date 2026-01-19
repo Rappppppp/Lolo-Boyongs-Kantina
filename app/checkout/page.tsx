@@ -9,32 +9,50 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Navigation from "@/components/navigation"
 
+import { useStore } from "@/lib/store"
+import { useCheckout } from "@/hooks/client/useCheckout"
+
+import { toast } from "sonner"
+import { set } from "date-fns"
+
 export default function CheckoutPage() {
-  const [paymentMethod, setPaymentMethod] = useState("card")
+  const { cartItems, getCartTotal, user } = useStore();
+
+  const { checkout } = useCheckout();
+
+  // Change to GCash only
+  // const [paymentMethod, setPaymentMethod] = useState("card")
+
   const [processing, setProcessing] = useState(false)
   const [completed, setCompleted] = useState(false)
+  const [orderNumber, setOrderNumber] = useState("")
 
   // Sample order data - would come from cart state
-  const subtotal = 95.99
-  const tax = 9.6
-  const delivery = 5.0
-  const total = subtotal + tax + delivery
+  const total = getCartTotal()
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setProcessing(true)
 
-    // Simulate payment processing
-    setTimeout(() => {
+    try {
+      const res = await checkout(cartItems);
+
+      console.log(res)
       setProcessing(false)
-      setCompleted(true)
-    }, 2000)
+      setCompleted(true);
+      setOrderNumber(res.order.order_id)
+      toast.success("Order placed successfully.")
+    } catch (e) {
+      toast.error("System Error. Failed to checkout.")
+      console.error(e)
+    }
   }
 
   if (completed) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation cartCount={0} onCartClick={() => {}} />
+        <Navigation onCartClick={() => { }} />
         <div className="max-w-2xl mx-auto px-4 py-12 text-center">
           <div className="bg-green-50 border-2 border-green-200 rounded-lg p-12">
             <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -46,9 +64,8 @@ export default function CheckoutPage() {
                 />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-green-900 mb-4">Order Confirmed!</h1>
+            <h1 className="text-3xl font-bold text-green-900 mb-4">Order #{orderNumber} Confirmed!</h1>
             <p className="text-lg text-green-800 mb-2">Your order has been successfully placed</p>
-            <p className="text-green-700 mb-8">Order #ORD-20241225-001</p>
             <p className="text-green-700 mb-8">Estimated delivery: 30 minutes</p>
             <Button size="lg" onClick={() => (window.location.href = "/")}>
               Return to Home
@@ -61,7 +78,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation cartCount={0} onCartClick={() => {}} />
+      <Navigation onCartClick={() => { }} />
 
       <div className="max-w-4xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold text-foreground mb-8">Checkout</h1>
@@ -76,8 +93,8 @@ export default function CheckoutPage() {
                   <CardTitle>Delivery Address</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Input placeholder="Full Name" required />
-                  <Input placeholder="Email Address" type="email" required />
+                  <Input defaultValue={`${user?.firstName} ${user?.lastName}`} placeholder="Full Name" required />
+                  <Input  defaultValue={user?.email} placeholder="Email Address" type="email" required />
                   <Input placeholder="Phone Number" type="tel" required />
                   <Input placeholder="Street Address" required />
                   <div className="grid grid-cols-2 gap-4">
@@ -88,7 +105,7 @@ export default function CheckoutPage() {
               </Card>
 
               {/* Payment Method */}
-              <Card>
+              {/* <Card>
                 <CardHeader>
                   <CardTitle>Payment Method</CardTitle>
                 </CardHeader>
@@ -100,9 +117,8 @@ export default function CheckoutPage() {
                     ].map((method) => (
                       <label
                         key={method.value}
-                        className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition ${
-                          paymentMethod === method.value ? "border-primary bg-primary/5" : "border-border"
-                        }`}
+                        className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition ${paymentMethod === method.value ? "border-primary bg-primary/5" : "border-border"
+                          }`}
                       >
                         <input
                           type="radio"
@@ -137,7 +153,7 @@ export default function CheckoutPage() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card> */}
 
               {/* Terms */}
               <div className="flex gap-3">
@@ -156,7 +172,7 @@ export default function CheckoutPage() {
                 ) : (
                   <>
                     <Lock className="w-4 h-4" />
-                    Complete Purchase ${total.toFixed(2)}
+                    Complete Purchase ₱{total.toFixed(2)}
                   </>
                 )}
               </Button>
@@ -171,47 +187,32 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-1">
-                      <p className="font-medium text-foreground">Pan-Seared Salmon</p>
-                      <p className="text-sm text-muted-foreground">Qty: 2</p>
+                  {cartItems && cartItems.map((cartItem) => {
+                    return <div key={cartItem.id} className="flex items-start gap-4">
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">{cartItem.name}</p>
+                        <p className="text-sm text-muted-foreground">Qty: {cartItem.quantity}</p>
+                      </div>
+                      <p className="font-semibold text-foreground">₱{cartItem.price}</p>
                     </div>
-                    <p className="font-semibold text-foreground">$49.98</p>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="flex-1">
-                      <p className="font-medium text-foreground">Truffle Dumplings</p>
-                      <p className="text-sm text-muted-foreground">Qty: 1</p>
-                    </div>
-                    <p className="font-semibold text-foreground">$12.99</p>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="flex-1">
-                      <p className="font-medium text-foreground">Chocolate Lava Cake</p>
-                      <p className="text-sm text-muted-foreground">Qty: 2</p>
-                    </div>
-                    <p className="font-semibold text-foreground">$17.98</p>
-                  </div>
+                  })}
                 </div>
 
                 <div className="border-t border-border pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium">${subtotal.toFixed(2)}</span>
+                    <span className="font-medium">₱{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tax</span>
-                    <span className="font-medium">${tax.toFixed(2)}</span>
+                    <span className="font-medium">₱{(total - subtotal).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Delivery</span>
-                    <span className="font-medium">${delivery.toFixed(2)}</span>
-                  </div>
+
                 </div>
 
                 <div className="border-t border-border pt-4 flex justify-between">
                   <span className="font-bold text-foreground">Total</span>
-                  <span className="text-2xl font-bold text-primary">${total.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-primary">₱{total.toFixed(2)}</span>
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">

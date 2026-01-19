@@ -15,6 +15,7 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
 
   useEffect(() => {
     const cookieUser = Cookies.get("user");
+    console.log(cookieUser)
     if (cookieUser) {
       try {
         setUser(JSON.parse(cookieUser));

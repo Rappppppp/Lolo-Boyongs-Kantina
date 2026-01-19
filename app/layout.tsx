@@ -1,7 +1,9 @@
 import './globals.css';
 import type { ReactNode } from 'react';
 import RootLayoutClient from './RootLayoutClient';
-import { Toaster } from '@/components/ui/toaster';
+// import { Toaster } from '@/components/ui/toaster';
+
+import { Toaster } from 'sonner';
 
 export const metadata = {
   title: "Lolo Boyong's Kantina",

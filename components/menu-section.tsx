@@ -6,6 +6,8 @@ import { useStore } from "@/lib/store"
 import Link from "next/link"
 import ImageCarousel from "./image-carousel"
 
+import { toast } from "sonner"
+
 interface MenuImage {
   path: string
   alt_text?: string
@@ -56,64 +58,67 @@ export default function MenuSection({ title, description, items = [], loading, e
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="animate-pulse border rounded-lg p-4 space-y-3 bg-muted/50 h-80" />
-            ))
+            <div key={i} className="animate-pulse border rounded-lg p-4 space-y-3 bg-muted/50 h-80" />
+          ))
           : items.map((item) => (
-              <div key={item.id} className="menu-card group">
-                {/* Image Carousel */}
-                <div className="menu-card-image">
-                  <ImageCarousel images={item.images?.filter(i => i.path).map(i => i.path) || []} />
-                </div>
+            <div key={item.id} className="menu-card group">
+              {/* Image Carousel */}
+              <div className="menu-card-image">
+                <ImageCarousel images={item.images?.filter(i => i.path).map(i => i.path) || []} />
+              </div>
 
-                {/* Badge */}
-                {item.badge && <div className="menu-card-badge">{item.badge}</div>}
+              {/* Badge */}
+              {item.badge && <div className="menu-card-badge">{item.badge}</div>}
 
-                {/* Content */}
-                <div className="menu-card-content">
-                  <h4 className="menu-card-title group-hover:text-primary transition-colors">{item.name}</h4>
-                  <p className="menu-card-description">{item.description}</p>
+              {/* Content */}
+              <div className="menu-card-content">
+                <h4 className="menu-card-title group-hover:text-primary transition-colors">{item.name}</h4>
+                <p className="menu-card-description">{item.description}</p>
 
-                  {item.rating && <div className="menu-card-rating">
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${i < Math.floor(item.rating) ? "fill-accent text-accent" : "text-muted"}`}
-                        />
-                      ))}
-                    </div>
-                    <span className="font-bold text-foreground text-sm">{item.rating}</span>
-                    {item.reviewCount && <span className="text-xs text-muted-foreground">({item.reviewCount})</span>}
-                  </div>}
-
-                  {/* Footer with price and action */}
-                  <div className="menu-card-footer">
-                    <span className="price-tag">₱{item.price}</span>
-
-                    {user ? (
-                      <Button
-                        onClick={() => addToCart(item)}
-                        className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-semibold rounded-full px-4 py-2 shadow-lg transition-all duration-300 hover:shadow-xl"
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        className="rounded-full px-4 py-2 border-2 border-primary hover:bg-primary hover:text-primary-foreground transition-all bg-transparent"
-                        asChild
-                      >
-                        <Link href="/login">
-                          <Plus className="w-4 h-4 mr-1" />
-                          Login
-                        </Link>
-                      </Button>
-                    )}
+                {item.rating && <div className="menu-card-rating">
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${i < Math.floor(item.rating) ? "fill-accent text-accent" : "text-muted"}`}
+                      />
+                    ))}
                   </div>
+                  <span className="font-bold text-foreground text-sm">{item.rating}</span>
+                  {item.reviewCount && <span className="text-xs text-muted-foreground">({item.reviewCount})</span>}
+                </div>}
+
+                {/* Footer with price and action */}
+                <div className="menu-card-footer">
+                  <span className="price-tag">₱{item.price}</span>
+
+                  {user ? (
+                    <Button
+                      onClick={() => {
+                        addToCart(item)
+                        toast.success(`${item.name} added to cart`, { position: "bottom-left" })
+                      }}
+                      className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-semibold rounded-full px-4 py-2 shadow-lg transition-all duration-300 hover:shadow-xl"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="rounded-full px-4 py-2 border-2 border-primary hover:bg-primary hover:text-primary-foreground transition-all bg-transparent"
+                      asChild
+                    >
+                      <Link href="/login">
+                        <Plus className="w-4 h-4 mr-1" />
+                        Login
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
       </div>
     </div>
   )

@@ -29,6 +29,8 @@ interface AddMenuDialogProps {
   open: boolean
   setOpen: (open: boolean) => void
   onSuccess: () => void
+  type: string
+  item: any | null
 }
 
 interface FilepondUpload {
@@ -36,6 +38,7 @@ interface FilepondUpload {
   directory: string
   file_extension: string
   remarks: string
+  path: string | null
 }
 
 interface FilepondResponse {
@@ -44,7 +47,13 @@ interface FilepondResponse {
   token_expires_in: number
 }
 
-export function AddMenuDialog({ open, setOpen, onSuccess }: AddMenuDialogProps) {
+export function AddMenuDialog({
+  open,
+  setOpen,
+  onSuccess,
+  type = 'Add',
+  item = null
+}: AddMenuDialogProps) {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [categoryId, setCategoryId] = useState("")
@@ -70,6 +79,23 @@ export function AddMenuDialog({ open, setOpen, onSuccess }: AddMenuDialogProps) 
       refresh()
     }
   }, [categories])
+
+  useEffect(() => {
+    console.log(item)
+
+    if (!item) {
+      resetForm();
+      return;
+    }
+
+    setName(item.name ?? "");
+    setDescription(item.description ?? "");
+    setCategoryId(String(item.category_id ?? ""));
+    setPrice(String(item.price ?? ""));
+    setIsBestseller(!!item.is_bestseller);
+    setIsAvailable(!!item.is_active);
+    setUploadedFiles(item.images ?? []);
+  }, [item])
 
   const handleFileUpload = async (files: File[]) => {
     if (!files.length) return
@@ -169,7 +195,7 @@ export function AddMenuDialog({ open, setOpen, onSuccess }: AddMenuDialogProps) 
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Add Menu Item</DialogTitle>
+          <DialogTitle className="text-2xl">{type} Menu Item</DialogTitle>
           <DialogDescription>Create a new menu item with images, pricing, and details</DialogDescription>
         </DialogHeader>
 
@@ -309,7 +335,7 @@ export function AddMenuDialog({ open, setOpen, onSuccess }: AddMenuDialogProps) 
                   disabled={isUploading || uploadedFiles.length >= 5}
                 />
                 <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-2">
-                  
+
                   {isUploading ? <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /> : <Upload className="w-8 h-8 text-muted-foreground" />}
                   <div>
                     <p className="text-sm font-medium">{isUploading ? "Uploading..." : "Click to upload images"}</p>
@@ -327,7 +353,7 @@ export function AddMenuDialog({ open, setOpen, onSuccess }: AddMenuDialogProps) 
                       className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-muted"
                     >
                       <img
-                        src={`${process.env.NEXT_PUBLIC_APP_URL}/storage/filepond/${file.blob}`}
+                        src={type === 'Edit' ? `${process.env.NEXT_PUBLIC_APP_URL}/storage/images/${file.path}` : `${process.env.NEXT_PUBLIC_APP_URL}/storage/filepond/${file.blob}`}
                         alt="Preview"
                         className="w-full h-full object-cover"
                       />
@@ -358,7 +384,15 @@ export function AddMenuDialog({ open, setOpen, onSuccess }: AddMenuDialogProps) 
             Cancel
           </Button>
           <Button onClick={submit} disabled={loading || !isFormValid}>
-            {loading ? "Creating..." : "Create Menu Item"}
+            {loading ? 
+              `${type == 'Edit' ?
+                 'Editing' :
+                 'Creating'}...` 
+                 : `
+                 ${type == 'Edit' ?
+                  'Edit' :
+                   'Create'} Menu Item`
+                   }
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -11,8 +11,18 @@ import AdminSkeleton from "@/components/admin-skeleton";
 export default function MenuManagementPage() {
   const { items, loading, refetch } = useMenuItems();
   const [openCreate, setOpenCreate] = useState(false);
+  const [type, setType] = useState('Add');
+  const [selectedItem, setSelectedItem] = useState(null)
 
   if (loading) return <AdminSkeleton />
+
+  const openItemModal = (type: string, item: any | null) => {
+    console.log(item)
+
+    setType(type);
+    setSelectedItem(item);
+    setOpenCreate(true);
+  }
 
   return (
     <div>
@@ -22,7 +32,7 @@ export default function MenuManagementPage() {
           <p className="text-muted-foreground">Add, edit, or remove dishes from your menu</p>
         </div>
 
-        <Button className="gap-2" onClick={() => setOpenCreate(true)}>
+        <Button className="gap-2" onClick={() => openItemModal('Add', null)}>
           <Plus className="w-4 h-4" />
           Add Item
         </Button>
@@ -52,7 +62,7 @@ export default function MenuManagementPage() {
                       <td className="py-4 px-4">{item.price}</td>
 
                       <td className="py-4 px-4 flex gap-2">
-                        <Button size="icon" variant="outline">
+                        <Button size="icon" variant="outline" onClick={() => openItemModal('Edit', item)}>
                           <Edit2 className="w-4 h-4" />
                         </Button>
 
@@ -70,7 +80,7 @@ export default function MenuManagementPage() {
       </Card>
 
       {/* Create Menu Dialog */}
-      <AddMenuDialog open={openCreate} setOpen={setOpenCreate} onSuccess={refetch} />
+      <AddMenuDialog item={selectedItem} type={type} open={openCreate} setOpen={setOpenCreate} onSuccess={refetch} />
     </div>
   );
 }

@@ -94,12 +94,9 @@ export default function Navigation({ onCartClick }: NavigationProps) {
 
           {user ? (
             <div className="hidden md:flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/profile" className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  {user.firstName}
-                </Link>
-              </Button>
+              <div className="flex items-center gap-2 px-2 py-1.5 rounded-xl border border-gray-200 shadow-xs">
+                Hi,<b>{user.firstName}!</b>
+              </div>
               <LogoutModal>
                 <Button
                   variant="ghost"
