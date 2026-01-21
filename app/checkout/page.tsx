@@ -14,10 +14,11 @@ import { useCheckout } from "@/hooks/client/useCheckout"
 
 import { toast } from "sonner"
 import { set } from "date-fns"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 export default function CheckoutPage() {
   const { cartItems, getCartTotal, user } = useStore();
-
   const { checkout } = useCheckout();
 
   // Change to GCash only
@@ -27,6 +28,16 @@ export default function CheckoutPage() {
   const [completed, setCompleted] = useState(false)
   const [orderNumber, setOrderNumber] = useState("")
 
+  // Form Fields
+  const [fullName, setFullName] = useState(`${user?.firstName ?? ""} ${user?.lastName ?? ""}`)
+  const [email, setEmail] = useState(user?.email ?? "")
+  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber ?? "")
+  const [address, setAddress] = useState(
+    `${user?.streetAddress ?? ""}, ${user?.barangay ?? ""}`
+  )
+  const [notes, setNotes] = useState("")
+  const [gcashRef, setGcashRef] = useState("")
+
   // Sample order data - would come from cart state
   const total = getCartTotal()
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
@@ -35,10 +46,19 @@ export default function CheckoutPage() {
     e.preventDefault()
     setProcessing(true)
 
-    try {
-      const res = await checkout(cartItems);
+    const payload = {
+      fullName,
+      email,
+      phoneNumber,
+      address,
+      notes,
+      gcashRef,
+      items: cartItems,
+    }
 
-      console.log(res)
+    try {
+      const res = await checkout(payload);
+
       setProcessing(false)
       setCompleted(true);
       setOrderNumber(res.order.order_id)
@@ -93,67 +113,42 @@ export default function CheckoutPage() {
                   <CardTitle>Delivery Address</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Input defaultValue={`${user?.firstName} ${user?.lastName}`} placeholder="Full Name" required />
-                  <Input  defaultValue={user?.email} placeholder="Email Address" type="email" required />
-                  <Input placeholder="Phone Number" type="tel" required />
-                  <Input placeholder="Street Address" required />
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input placeholder="City" required />
-                    <Input placeholder="ZIP Code" required />
-                  </div>
+                  <Input
+                    defaultValue={`${user?.firstName} ${user?.lastName}`}
+                    placeholder="Full Name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                  />
+                  <Input
+                    defaultValue={user?.email}
+                    placeholder="Email Address" type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                  <Input
+                    defaultValue={user?.phoneNumber}
+                    placeholder="Phone Number" type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                  />
+                  <Input
+                    defaultValue={`${user?.streetAddress}, ${user?.barangay}`}
+                    placeholder="Street Address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    required
+                  />
+                  <Textarea
+                    placeholder="Notes"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    required
+                  />
                 </CardContent>
               </Card>
-
-              {/* Payment Method */}
-              {/* <Card>
-                <CardHeader>
-                  <CardTitle>Payment Method</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { value: "card", label: "Credit Card", icon: CreditCard },
-                      { value: "gcash", label: "GCash", icon: PhilippinePeso },
-                    ].map((method) => (
-                      <label
-                        key={method.value}
-                        className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition ${paymentMethod === method.value ? "border-primary bg-primary/5" : "border-border"
-                          }`}
-                      >
-                        <input
-                          type="radio"
-                          value={method.value}
-                          checked={paymentMethod === method.value}
-                          onChange={(e) => setPaymentMethod(e.target.value)}
-                          className="cursor-pointer"
-                        />
-                        <method.icon className="w-5 h-5 text-primary" />
-                        <span className="font-medium">{method.label}</span>
-                      </label>
-                    ))}
-                  </div>
-
-                  {paymentMethod === "card" && (
-                    <div className="space-y-4 pt-4 border-t border-border">
-                      <Input placeholder="Cardholder Name" required />
-                      <Input placeholder="Card Number" required />
-                      <div className="grid grid-cols-2 gap-4">
-                        <Input placeholder="MM/YY" required />
-                        <Input placeholder="CVC" required />
-                      </div>
-                    </div>
-                  )}
-
-                  {paymentMethod === "gcash" && (
-                    <div className="space-y-4 pt-4 border-t border-border">
-                      <Input placeholder="GCash Mobile Number" type="tel" required />
-                      <p className="text-sm text-muted-foreground">
-                        You will receive a prompt on your GCash app to complete the payment
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card> */}
 
               {/* Terms */}
               <div className="flex gap-3">
@@ -214,6 +209,9 @@ export default function CheckoutPage() {
                   <span className="font-bold text-foreground">Total</span>
                   <span className="text-2xl font-bold text-primary">₱{total.toFixed(2)}</span>
                 </div>
+
+                <Label className="mt-4 mb-2 text-gray-500 font-bold">GCash Ref. No</Label>
+                <Input placeholder="Enter the reference number" type="text" required />
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-xs text-blue-800">

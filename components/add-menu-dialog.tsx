@@ -262,38 +262,6 @@ export function AddMenuDialog({
             </div>
           </div>
 
-          {/* Tags */}
-          {/* <div className="space-y-2">
-            <Label htmlFor="tags">
-              <TagIcon className="inline-block w-4 h-4 mr-1" />
-              Tags
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                id="tags"
-                placeholder="Add a tag and press Enter"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleTagKeyDown}
-              />
-              <Button type="button" variant="outline" onClick={addTag}>
-                Add
-              </Button>
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="gap-1">
-                    {tag}
-                    <button type="button" onClick={() => removeTag(tag)} className="ml-1 hover:text-destructive">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div> */}
-
           {/* Settings */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
             <div className="flex items-center justify-between">
@@ -323,26 +291,6 @@ export function AddMenuDialog({
               Images
             </Label>
             <div className="space-y-3">
-              {/* Upload Button */}
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload(Array.from(e.target.files ?? []).slice(0, 5))}
-                  className="hidden"
-                  id="file-upload"
-                  disabled={isUploading || uploadedFiles.length >= 5}
-                />
-                <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-2">
-
-                  {isUploading ? <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /> : <Upload className="w-8 h-8 text-muted-foreground" />}
-                  <div>
-                    <p className="text-sm font-medium">{isUploading ? "Uploading..." : "Click to upload images"}</p>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB (Max 5 images)</p>
-                  </div>
-                </label>
-              </div>
 
               {/* Image Previews */}
               {uploadedFiles.length > 0 && (
@@ -368,6 +316,28 @@ export function AddMenuDialog({
                   ))}
                 </div>
               )}
+
+              {/* Upload Button */}
+              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(Array.from(e.target.files ?? []).slice(0, 5))}
+                  className="hidden"
+                  id="file-upload"
+                  disabled={isUploading || uploadedFiles.length >= 5}
+                />
+                <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-2">
+
+                  {isUploading ? <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /> : <Upload className="w-8 h-8 text-muted-foreground" />}
+                  <div>
+                    <p className="text-sm font-medium">{isUploading ? "Uploading..." : "Click to upload images"}</p>
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB (Max 5 images)</p>
+                  </div>
+                </label>
+              </div>
+
             </div>
           </div>
         </div>
@@ -384,15 +354,15 @@ export function AddMenuDialog({
             Cancel
           </Button>
           <Button onClick={submit} disabled={loading || !isFormValid}>
-            {loading ? 
+            {loading ?
               `${type == 'Edit' ?
-                 'Editing' :
-                 'Creating'}...` 
-                 : `
+                'Editing' :
+                'Creating'}...`
+              : `
                  ${type == 'Edit' ?
-                  'Edit' :
-                   'Create'} Menu Item`
-                   }
+                'Edit' :
+                'Create'} Menu Item`
+            }
           </Button>
         </DialogFooter>
       </DialogContent>

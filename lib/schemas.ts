@@ -7,6 +7,14 @@ export const registerSchema = z
         email: z.string().email("Invalid email address"),
         password: z.string().min(1, "Password is required"),
         confirmPassword: z.string().min(1, "Confirm password is required"),
+        phone_number: z
+            .string()
+            .regex(/^(09\d{9}|9\d{9}|639\d{9}|\+639\d{9})$/, {
+                message:
+                    "Invalid phone number format. Please use Philippine number format.",
+            }),
+        street_address: z.string().min(1, "Street address is required"),
+        barangay: z.string().min(1, "Barangay is required"),
     })
     .superRefine(({ password, confirmPassword }, ctx) => {
         const requirements = [

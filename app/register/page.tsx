@@ -13,11 +13,17 @@ import Image from "next/image"
 import { useRegister } from "@/hooks/useRegister"
 
 export default function RegisterPage() {
+  // States for form fields
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [streetAddress, setStreetAddress] = useState("")
+  const [barangay, setBarangay] = useState("")
+
+
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | string[]>>({})
   const { register, loading, error } = useRegister()
   const router = useRouter()
@@ -32,6 +38,9 @@ export default function RegisterPage() {
       email,
       password,
       confirmPassword,
+      phone_number: phoneNumber,
+      street_address: streetAddress,
+      barangay,
     })
 
     if (!result.success) {
@@ -39,7 +48,7 @@ export default function RegisterPage() {
       result.error.errors.forEach((err) => {
         const field = err.path[0] as string
         if (!errors[field]) errors[field] = []
-        ;(errors[field] as string[]).push(err.message)
+          ; (errors[field] as string[]).push(err.message)
       })
       setFieldErrors(errors)
       return
@@ -52,6 +61,9 @@ export default function RegisterPage() {
         email,
         password,
         confirmPassword,
+        phoneNumber,
+        streetAddress,
+        barangay,
       })
       // Registration successful, redirect to login
       router.push("/login")
@@ -172,6 +184,55 @@ export default function RegisterPage() {
                   )}
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Phone Number</label>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className={`bg-input  w-full px-4 py-2 border rounded-lg ${fieldErrors.phone_number ? "border-destructive" : "border-border"
+                    }`}
+                  placeholder="09XXXXXXXXX"
+                />
+                {fieldErrors.phone_number && (
+                  <p className="text-destructive text-sm">{fieldErrors.phone_number}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Street Address</label>
+                  <input
+                    type="text"
+                    value={streetAddress}
+                    onChange={(e) => setStreetAddress(e.target.value)}
+                    className={`bg-input w-full px-4 py-2 border rounded-lg ${fieldErrors.street_address ? "border-destructive" : "border-border"
+                      }`}
+                    placeholder="House No., Street"
+                  />
+                  {fieldErrors.street_address && (
+                    <p className="text-destructive text-sm">{fieldErrors.street_address}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Barangay</label>
+                  <input
+                    type="text"
+                    value={barangay}
+                    onChange={(e) => setBarangay(e.target.value)}
+                    className={`bg-input w-full px-4 py-2 border rounded-lg ${fieldErrors.barangay ? "border-destructive" : "border-border"
+                      }`}
+                    placeholder="Barangay"
+                  />
+                  {fieldErrors.barangay && (
+                    <p className="text-destructive text-sm">{fieldErrors.barangay}</p>
+                  )}
+                </div>
+              </div>
+
+
 
               <Button type="submit" className="w-full" size="lg" disabled={loading}>
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Create Account"}

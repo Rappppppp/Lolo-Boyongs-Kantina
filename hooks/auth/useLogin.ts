@@ -17,14 +17,17 @@ export function useLogin() {
 
     // Save token to cookies (Laravel passport / sanctum usually returns token)
     if (response?.token && response?.user) {
-      const { id, first_name, last_name, email, role } = response.user;
+      const { id, first_name, last_name, email, phone_number, street_address, barangay, role } = response.user;
 
       const userData = {
         id,
         firstName: first_name,
         lastName: last_name,
         email,
-        role
+        role,
+        phoneNumber: phone_number,
+        streetAddress: street_address,
+        barangay,
       }
 
       setUser(userData);

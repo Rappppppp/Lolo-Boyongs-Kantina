@@ -17,6 +17,9 @@ export function useRegister() {
     email: string;
     password: string;
     confirmPassword: string;
+    phoneNumber?: string;
+    streetAddress?: string;
+    barangay?: string;
   }) => {
     setLoading(true);
     setError(null);
@@ -29,6 +32,9 @@ export function useRegister() {
           email: payload.email,
           password: payload.password,
           confirm_password: payload.confirmPassword,
+          phone_number: payload.phoneNumber,
+          street_address: payload.streetAddress,
+          barangay: payload.barangay,
         }
       });
 

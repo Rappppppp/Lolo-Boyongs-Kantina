@@ -2,12 +2,27 @@ import { useApi } from "@/hooks/use-api";
 import { useStore } from "@/lib/store";
 
 export const useCheckout = () => {
+
+    type CheckoutPayload = {
+        fullName: string
+        email: string
+        phoneNumber: string
+        address: string
+        gcashRef: string
+        items: typeof cartItems
+    }
+
     const { data, loading, error, callApi } = useApi("/ordering", "POST");
     const { cartItems, clearCart } = useStore();
 
-    const checkout = async (items: any[]) => {
+    const checkout = async (checkoutPayload: CheckoutPayload) => {
         const payload = {
-            menu_items: items.map(item => ({
+            full_name: checkoutPayload.fullName,
+            email: checkoutPayload.email,
+            phone_number: checkoutPayload.phoneNumber,
+            street_address: checkoutPayload.address,
+            gcash_ref: checkoutPayload.gcashRef,
+            menu_items: checkoutPayload.items.map(item => ({
                 id: item.id,
                 qty: item.quantity,
             })),

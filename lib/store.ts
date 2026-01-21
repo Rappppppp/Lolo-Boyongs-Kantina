@@ -15,6 +15,9 @@ interface User {
   role: string
   firstName: string
   lastName: string
+  phoneNumber: string
+  streetAddress: string
+  barangay: string
 }
 
 interface VerificationState {
