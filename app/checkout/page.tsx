@@ -13,20 +13,42 @@ import { useStore } from "@/lib/store"
 import { useCheckout } from "@/hooks/client/useCheckout"
 
 import { toast } from "sonner"
-import { set } from "date-fns"
+// import { set } from "date-fns"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+
+import { useRouter } from "next/navigation"
+
+type OrderItem = {
+  order_id: string
+  menu_item_id: string
+  menu_item_name: string
+  price: number
+  quantity: number
+  line_total: number
+}
+
+type Order = {
+  order_id: string
+  notes?: string
+  items: OrderItem[]
+  items_total: number
+  status: string
+  created_at: string
+  created_at_human: string
+}
 
 export default function CheckoutPage() {
   const { cartItems, getCartTotal, user } = useStore();
   const { checkout } = useCheckout();
+  const router = useRouter();
 
   // Change to GCash only
   // const [paymentMethod, setPaymentMethod] = useState("card")
 
   const [processing, setProcessing] = useState(false)
   const [completed, setCompleted] = useState(false)
-  const [orderNumber, setOrderNumber] = useState("")
+  const [order, setOrder] = useState<Order | null>(null)
 
   // Form Fields
   const [fullName, setFullName] = useState(`${user?.firstName ?? ""} ${user?.lastName ?? ""}`)
@@ -61,7 +83,7 @@ export default function CheckoutPage() {
 
       setProcessing(false)
       setCompleted(true);
-      setOrderNumber(res.order.order_id)
+      setOrder(res.order);
       toast.success("Order placed successfully.")
     } catch (e) {
       toast.error("System Error. Failed to checkout.")
@@ -69,31 +91,10 @@ export default function CheckoutPage() {
     }
   }
 
-  if (completed) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation onCartClick={() => { }} />
-        <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-12">
-            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold text-green-900 mb-4">Order #{orderNumber} Confirmed!</h1>
-            <p className="text-lg text-green-800 mb-2">Your order has been successfully placed</p>
-            <p className="text-green-700 mb-8">Estimated delivery: 30 minutes</p>
-            <Button size="lg" onClick={() => (window.location.href = "/")}>
-              Return to Home
-            </Button>
-          </div>
-        </div>
-      </div>
-    )
+  if (completed && order) {
+    sessionStorage.setItem(`orderId=${order.order_id}`, JSON.stringify(order));
+
+    return router.push(`/checkout/status?orderId=${order.order_id}`)
   }
 
   return (
@@ -113,6 +114,8 @@ export default function CheckoutPage() {
                   <CardTitle>Delivery Address</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+
+                  <Label className="mb-1">Receipient Name <span className="text-red-500">*</span></Label>
                   <Input
                     defaultValue={`${user?.firstName} ${user?.lastName}`}
                     placeholder="Full Name"
@@ -120,6 +123,8 @@ export default function CheckoutPage() {
                     onChange={(e) => setFullName(e.target.value)}
                     required
                   />
+
+                  <Label className="mb-1">Email <span className="text-red-500">*</span></Label>
                   <Input
                     defaultValue={user?.email}
                     placeholder="Email Address" type="email"
@@ -127,6 +132,8 @@ export default function CheckoutPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
+
+                  <Label className="mb-1">Phone Number <span className="text-red-500">*</span></Label>
                   <Input
                     defaultValue={user?.phoneNumber}
                     placeholder="Phone Number" type="tel"
@@ -134,6 +141,8 @@ export default function CheckoutPage() {
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     required
                   />
+
+                  <Label className="mb-1">Address <span className="text-red-500">*</span></Label>
                   <Input
                     defaultValue={`${user?.streetAddress}, ${user?.barangay}`}
                     placeholder="Street Address"
@@ -141,12 +150,16 @@ export default function CheckoutPage() {
                     onChange={(e) => setAddress(e.target.value)}
                     required
                   />
+
+                  <Label className="mb-1">Notes</Label>
                   <Textarea
-                    placeholder="Notes"
+                    placeholder="Enter any special requests or comments"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    required
                   />
+
+                  <Label className="mb-1">GCash Ref. No <span className="text-red-500">*</span></Label>
+                  <Input placeholder="Enter the reference number" type="text" required />
                 </CardContent>
               </Card>
 
@@ -209,9 +222,6 @@ export default function CheckoutPage() {
                   <span className="font-bold text-foreground">Total</span>
                   <span className="text-2xl font-bold text-primary">₱{total.toFixed(2)}</span>
                 </div>
-
-                <Label className="mt-4 mb-2 text-gray-500 font-bold">GCash Ref. No</Label>
-                <Input placeholder="Enter the reference number" type="text" required />
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-xs text-blue-800">

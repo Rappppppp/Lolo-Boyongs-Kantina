@@ -87,7 +87,7 @@ export default function DriverInfo({ status }: DriverInfoProps) {
             <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl animate-bounce">
               👨‍🍳
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">Finding a Rider</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">Assigning a Rider</h3>
             <p className="text-sm text-muted-foreground mb-6">
               We're looking for an available driver to pick up your order
             </p>

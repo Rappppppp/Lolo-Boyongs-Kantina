@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import OrderStatusTracker from '@/components/order/order-status-tracker';
 import OrderDetails from '@/components/order/order-details';
 import DriverInfo from '@/components/order/driver-info';
@@ -8,73 +8,121 @@ import OrderChat from '@/components/order/order-chat';
 import { useSearchParams } from 'next/navigation';
 import { useGetOrderStatus } from '@/hooks/client/useGetOrderStatus';
 
-export default function Home() {
-    const searchParams = useSearchParams()
-    const orderId = searchParams.get("orderId")
+import { Order } from '@/app/types/order';
 
-    if (!orderId) {
-        return <div className="p-8 text-center text-red-600">Order ID is missing in the URL.</div>;
-    }
+export default function OrderStatusPage() {
+    const searchParams = useSearchParams();
+    const orderId = searchParams.get('orderId');
 
     const { data, getOrderStatus } = useGetOrderStatus();
-
-    const [orderStatus, setOrderStatus] = useState('pending');
+    const [order, setOrder] = useState<Order | null>(null);
     const [refreshCount, setRefreshCount] = useState(0);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Simulate API call every 5 seconds
+    if (!orderId) {
+        return (
+            <div className="p-8 text-center text-red-600">
+                Order ID is missing in the URL.
+            </div>
+        );
+    }
+
+    // Stable reference to the fetch function
+    const fetchOrder = useCallback(async () => {
+        try {
+            console.log('Fetching order:', orderId);
+            const res = await getOrderStatus(orderId);
+            console.log('Response:', res);
+            
+            if (!res?.data) {
+                console.error('No data in response:', res);
+                setError('No order data received');
+                setIsLoading(false);
+                return;
+            }
+
+            const newData = res.data;
+            console.log('Order data:', newData);
+            
+            const stored = sessionStorage.getItem(`orderId=${orderId}`);
+            const storedData = stored ? JSON.parse(stored) : null;
+
+            // Only update if changed
+            if (!storedData || storedData.status !== newData.status) {
+                setOrder(newData);
+                sessionStorage.setItem(`orderId=${orderId}`, JSON.stringify(newData));
+            } else if (!order) {
+                // First load - set order even if it matches storage
+                setOrder(newData);
+            }
+            
+            setIsLoading(false);
+            setError(null);
+        } catch (err) {
+            console.error("Failed to fetch order:", err);
+            setError(err instanceof Error ? err.message : 'Failed to fetch order');
+            setIsLoading(false);
+        }
+    }, [orderId, order]); // Add order to dependencies
+
     useEffect(() => {
-        // fetch order
-        getOrderStatus(Number(orderId));
+        // Initial fetch
+        fetchOrder();
 
-        setOrderStatus(data?.status || 'pending');
+        // Set up interval for subsequent fetches
+        const interval = setInterval(fetchOrder, 10000);
 
-        // const interval = setInterval(() => {
-        //     setRefreshCount(prev => prev + 1);
+        return () => {
+            clearInterval(interval);
+        };
+    }, [fetchOrder]);
 
-        //     // Simulate status progression
-        //     const statuses = ['pending', 'confirmed', 'preparing', 'ready_pickup', 'on_way', 'arrived', 'completed'];
-        //     setOrderStatus(prev => {
-        //         const currentIndex = statuses.indexOf(prev);
-        //         if (currentIndex < statuses.length - 1) {
-        //             // 70% chance to progress to next status every 2 polling cycles
-        //             return Math.random() > 0.7 ? statuses[currentIndex + 1] : prev;
-        //         }
-        //         return prev;
-        //     });
-        // }, 5000);
+    if (error) {
+        return (
+            <div className="p-8 text-center text-red-600">
+                Error: {error}
+            </div>
+        );
+    }
 
-        // return () => clearInterval(interval);
-    }, []);
+    if (isLoading || !order) {
+        return <div className="p-8 text-center text-gray-500">Loading order...</div>;
+    }
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-white to-orange-50">
+        <div className="min-h-screen bg-gradient-to-br from-white to-orange-50">
             <div className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
-                        <h1 className="text-3xl font-bold text-foreground">Order #1024</h1>
+                        <h1 className="text-3xl font-bold text-foreground">
+                            Order #{order.order_id}
+                        </h1>
                         <div className="text-sm text-muted-foreground">
                             Last updated: {new Date().toLocaleTimeString()}
                         </div>
                     </div>
-                    <p className="text-muted-foreground">est. {Math.floor(Math.random() * 15) + 5} mins away</p>
                 </div>
 
-                {/* Main content grid */}
+                {/* div content grid */}
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Left column - Status tracker */}
-                    <div className="lg:col-span-2">
-                        <OrderStatusTracker status={orderStatus} refreshCount={refreshCount} />
-                        <OrderDetails status={orderStatus} />
+                    <div className="lg:col-span-2 space-y-6">
+                        <OrderStatusTracker
+                            order={order}
+                            refreshCount={refreshCount}
+                        />
+                        <OrderDetails order={order} />
                     </div>
 
                     {/* Right column - Driver info and chat */}
                     <div className="space-y-6">
-                        <DriverInfo status={orderStatus} />
+                        <DriverInfo status={order.status} />
                         <OrderChat />
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }

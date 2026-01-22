@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { Clock, ChefHat, Package, Truck, MapPin, CheckCircle2 } from "lucide-react"
+import { Order } from "@/app/types/order"
 
 interface StatusStep {
   id: string
@@ -11,32 +12,44 @@ interface StatusStep {
 }
 
 interface OrderStatusTrackerProps {
-  status: string
+  order: Order
   refreshCount: number
 }
 
-export default function OrderStatusTracker({ status, refreshCount }: OrderStatusTrackerProps) {
+export default function OrderStatusTracker({ order, refreshCount }: OrderStatusTrackerProps) {
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null)
 
   const steps: StatusStep[] = [
     { id: "pending", label: "Pending", description: "Waiting for confirmation", icon: <Clock /> },
     { id: "confirmed", label: "Confirmed", description: "Order received", icon: <Clock /> },
     { id: "preparing", label: "Preparing", description: "Being cooked", icon: <ChefHat /> },
-    { id: "ready_pickup", label: "Ready", description: "Waiting for rider", icon: <Package /> },
-    { id: "on_way", label: "On the Way", description: "Driver is coming", icon: <Truck /> },
-    { id: "arrived", label: "Arriving", description: "5 mins away", icon: <MapPin /> },
-    { id: "completed", label: "Delivered", description: "Order complete", icon: <CheckCircle2 /> },
+    // { id: "ready_pickup", label: "Ready", description: "Waiting for rider", icon: <Package /> },
+    { id: "otw", label: "On the Way", description: "Driver is coming", icon: <Truck /> },
+    { id: "delivered", label: "Delivered", description: "Order complete", icon: <CheckCircle2 /> },
   ]
 
-  const currentIndex = steps.findIndex(s => s.id === status)
+  const [prevIndex, setPrevIndex] = useState(0);
+  const currentIndex = Math.max(steps.findIndex(s => s.id === order.status), 0);
 
   useEffect(() => {
-    if (currentIndex > 0) {
-      setAnimatingIndex(currentIndex)
-      const t = setTimeout(() => setAnimatingIndex(null), 600)
-      return () => clearTimeout(t)
+    if (prevIndex !== currentIndex) {
+      // Animate one step at a time
+      const step = prevIndex < currentIndex ? 1 : -1;
+      let i = prevIndex;
+
+      const interval = setInterval(() => {
+        i += step;
+        setAnimatingIndex(i);
+        if (i === currentIndex) {
+          clearInterval(interval);
+          setAnimatingIndex(null);
+          setPrevIndex(currentIndex);
+        }
+      }, 300); // adjust speed of step animation
+
+      return () => clearInterval(interval);
     }
-  }, [currentIndex, refreshCount])
+  }, [currentIndex, prevIndex]);
 
   return (
     <div className="bg-white rounded-2xl p-8 shadow-sm border">
@@ -54,9 +67,8 @@ export default function OrderStatusTracker({ status, refreshCount }: OrderStatus
               {/* Connector */}
               {index !== 0 && (
                 <div
-                  className={`absolute top-7 -left-1/2 w-full h-1 transition-colors ${
-                    isCompleted ? "bg-primary" : "bg-gray-200"
-                  }`}
+                  className={`absolute top-7 -left-1/2 w-full h-1 transition-colors ${isCompleted ? "bg-primary" : "bg-gray-200"
+                    }`}
                 />
               )}
 
@@ -74,9 +86,8 @@ export default function OrderStatusTracker({ status, refreshCount }: OrderStatus
               {/* Text */}
               <div className="mt-3">
                 <p
-                  className={`font-semibold text-sm ${
-                    isCompleted || isCurrent ? "text-foreground" : "text-gray-400"
-                  }`}
+                  className={`font-semibold text-sm ${isCompleted || isCurrent ? "text-foreground" : "text-gray-400"
+                    }`}
                 >
                   {step.label}
                 </p>
