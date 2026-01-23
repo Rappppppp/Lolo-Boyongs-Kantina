@@ -2,16 +2,18 @@
 
 import { useState, useCallback } from "react"
 import { useApi } from "@/hooks/use-api"
-import { useToast } from "@/components/ui/use-toast"
+// import { useToast } from "@/components/ui/use-toast"
 import { Order } from "@/app/types/order"
+
+import { toast } from "sonner"
 
 interface UpdateStatusPayload {
   order_id: string
   status: string
+  rider_id?: string
 }
 
 export function useOrders() {
-  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
 
   // GET /admin/order
@@ -21,6 +23,7 @@ export function useOrders() {
   const updateApi = useApi<{
     message: string
     status?: string
+    rider_id?: string
   }>("/admin/order/update", "PUT")
 
   // ✅ Fetch orders
@@ -30,11 +33,7 @@ export function useOrders() {
       const res = await listApi.callApi()
       return res.data
     } catch (err: any) {
-      toast({
-        title: "Failed to fetch orders",
-        description: err?.message ?? "Unknown error",
-        variant: "destructive",
-      })
+      toast.error(err.message || "Failed to fetch order")
       throw err
     } finally {
       setLoading(false)
@@ -48,13 +47,10 @@ export function useOrders() {
         const res = await updateApi.callApi({
           body: payload,
         })
+        toast.success(`Successfully updated order status to ${payload.status.toUpperCase()}`)
         return res
       } catch (err: any) {
-        toast({
-          title: "Failed to update order status",
-          description: err?.message ?? "Unknown error",
-          variant: "destructive",
-        })
+        toast.error(err?.message || "Failed to update order status")
         throw err
       }
     },

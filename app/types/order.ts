@@ -7,6 +7,12 @@ export type OrderItem = {
   line_total: number;
 };
 
+export type Rider = {
+  id: string;
+  name: string;
+  phone: string;
+}
+
 export type Order = {
   order_id: string;
   notes?: string;
@@ -17,9 +23,7 @@ export type Order = {
   created_at_human: string;
 
   // Additional fields
-  driver_id?: string;
-  driver_name?: string;
-  driver_phone?: string;
+  rider: Rider | null;
 
   receipient_name?: string;
   phone_number?: string;

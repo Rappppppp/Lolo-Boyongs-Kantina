@@ -21,8 +21,8 @@ export default function OrderStatusTracker({ order, refreshCount }: OrderStatusT
 
   const steps: StatusStep[] = [
     { id: "pending", label: "Pending", description: "Waiting for confirmation", icon: <Clock /> },
-    { id: "confirmed", label: "Confirmed", description: "Order received", icon: <Clock /> },
-    { id: "preparing", label: "Preparing", description: "Being cooked", icon: <ChefHat /> },
+    { id: "filler1", label: "Confirmed", description: "Order received", icon: <Clock /> },
+    { id: "confirmed", label: "Preparing", description: "Being cooked", icon: <ChefHat /> },
     // { id: "ready_pickup", label: "Ready", description: "Waiting for rider", icon: <Package /> },
     { id: "otw", label: "On the Way", description: "Driver is coming", icon: <Truck /> },
     { id: "delivered", label: "Delivered", description: "Order complete", icon: <CheckCircle2 /> },
@@ -76,7 +76,7 @@ export default function OrderStatusTracker({ order, refreshCount }: OrderStatusT
               <div
                 className={`relative z-10 w-14 h-14 rounded-full flex items-center justify-center transition-all
                   ${isCompleted || isCurrent ? "bg-primary text-white" : "bg-gray-100 text-gray-400"}
-                  ${isCurrent ? "ring-4 ring-primary/30" : ""}
+                  ${isCurrent ? "ring-4 ring-primary/30 " : ""}
                   ${isPulse ? "animate-pulse" : ""}
                 `}
               >

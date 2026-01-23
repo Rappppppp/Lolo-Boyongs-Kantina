@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Cookies from "js-cookie";
 import { useStore } from "@/lib/store";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,11 +11,9 @@ const geist = Geist({ subsets: ["latin"], weight: "400" });
 
 export default function RootLayoutClient({ children }: { children: React.ReactNode }) {
   const { setUser } = useStore();
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const cookieUser = Cookies.get("user");
-    console.log(cookieUser)
     if (cookieUser) {
       try {
         setUser(JSON.parse(cookieUser));
@@ -23,10 +21,7 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
         setUser(null);
       }
     }
-    setHydrated(true);
   }, [setUser]);
-
-  if (!hydrated) return null;
 
   return (
     <div className={`${geist.className} antialiased`}>

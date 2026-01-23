@@ -12,7 +12,7 @@ interface CartItem {
 interface User {
   id: string
   email: string
-  role: string
+  role: "user" | "rider" | "admin"
   firstName: string
   lastName: string
   phoneNumber: string

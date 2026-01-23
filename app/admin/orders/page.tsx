@@ -4,21 +4,30 @@ import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Check, Truck, X } from "lucide-react"
+import { Clock, Check, Truck, X, Users, Edit2 } from "lucide-react"
 import { useOrders } from "@/hooks/admin/useOrders"
-import { Order } from "@/app/types/order"
+import { Order, Rider } from "@/app/types/order"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { useUsers } from "@/hooks/admin/useUsers"
+import { OrderDetailsDialog } from "@/components/order/order-details-dialog"
 
 const statusConfig = {
   pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
   confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
   otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
-  delivered: { label: "Delivered", icon: Check, color: "bg-green-100 text-green-800" },
+  delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
 }
 
 const statusFlow = {
@@ -28,36 +37,62 @@ const statusFlow = {
   delivered: null,
 }
 
-const getNextButtonLabel = (status: string) => {
-  const labels: { [key: string]: string } = {
-    pending: "Mark Confirmed",
-    confirmed: "Start Delivery",
-    otw: "Mark Completed",
-  }
-  return labels[status] || null
-}
-
 export default function OrdersPage() {
   const [filter, setFilter] = useState<"all" | keyof typeof statusConfig>("all")
   const [orders, setOrders] = useState<Order[]>([])
+  const [riders, setRiders] = useState<Rider[]>([])
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedRider, setSelectedRider] = useState<Rider | null>(null)
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const { fetchUsers } = useUsers()
   const { fetchOrders, updateOrderStatus, loading } = useOrders()
 
   // 🔒 Fetch ONCE on mount
   useEffect(() => {
-    fetchOrders().then(setOrders).catch(() => {})
+    fetchOrders().then(setOrders).catch(() => { })
+    fetchUsers('rider').then(setRiders).catch(() => { })
   }, [])
 
   const handleStatusChange = (orderId: string, newStatus: string) => {
-    setOrders(orders.map(order =>
-      order.order_id === orderId ? { ...order, status: newStatus } : order
-    ))
+    console.log(selectedRider)
+
     if (selectedOrder && selectedOrder.order_id === orderId) {
+      setOrders(orders.map(order =>
+        order.order_id === orderId ? { ...order, status: newStatus } : order
+      ))
       setSelectedOrder({ ...selectedOrder, status: newStatus })
-      updateOrderStatus({ order_id: orderId, status: newStatus })
+      updateOrderStatus({ order_id: orderId, status: newStatus, rider_id: selectedRider?.id })
+      setIsDialogOpen(false)
     }
   }
+
+  const handleRiderAssign = (order: Order, rider: Rider) => {
+    setSelectedOrder({ ...order, rider })
+
+    setOrders(prev =>
+      prev.map(o =>
+        o.order_id === order.order_id ? { ...o, rider } : o
+      )
+    )
+
+    setSelectedRider(rider)
+  }
+
+
+  const handleSaveNotes = (orderId: string, notes: string) => {
+    setOrders(prev =>
+      prev.map(order =>
+        order.order_id === orderId ? { ...order, notes } : order
+      )
+    )
+
+    if (selectedOrder?.order_id === orderId) {
+      setSelectedOrder({ ...selectedOrder, notes })
+    }
+  }
+
 
   const filteredOrders = useMemo(() => {
     if (filter === "all") return orders
@@ -149,7 +184,7 @@ export default function OrdersPage() {
                         variant="outline"
                         onClick={() => {
                           setSelectedOrder(order)
-                          setIsModalOpen(true)
+                          setIsDialogOpen(true)
                         }}
                       >
                         View
@@ -164,117 +199,17 @@ export default function OrdersPage() {
       </Card>
 
       {/* Order Details Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Order #{selectedOrder?.order_id}</DialogTitle>
-          </DialogHeader>
-
-          {selectedOrder && (
-            <div className="space-y-6">
-              {/* Order Info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Recipient</p>
-                  <p className="font-semibold">{selectedOrder.receipient_name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-semibold">{selectedOrder.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Address</p>
-                  <p className="font-semibold">{selectedOrder.address}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Order Date</p>
-                  <p className="font-semibold">{selectedOrder.created_at_human}</p>
-                </div>
-              </div>
-
-              {/* Items */}
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground mb-3">
-                  Items
-                </p>
-                <div className="space-y-2 bg-muted/30 p-3 rounded-lg">
-                  {selectedOrder.items.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="flex justify-between items-center text-sm"
-                    >
-                      <span>{item.menu_item_name}</span>
-                      <span className="text-muted-foreground">
-                        ₱{item.price} × {item.quantity}
-                      </span>
-                    </div>
-                  ))}
-                  <div className="border-t border-border pt-2 mt-2 flex justify-between font-semibold">
-                    <span>Total</span>
-                    <span>₱{selectedOrder.items_total}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Status */}
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground mb-3">
-                  Current Status
-                </p>
-                <Badge
-                  className={
-                    statusConfig[
-                      selectedOrder.status as keyof typeof statusConfig
-                    ]?.color
-                  }
-                >
-                  {statusConfig[selectedOrder.status as keyof typeof statusConfig]
-                    ?.label || selectedOrder.status}
-                </Badge>
-              </div>
-
-              {/* Notes */}
-              {selectedOrder.notes && (
-                <div>
-                  <p className="text-sm font-semibold text-muted-foreground mb-2">
-                    Notes
-                  </p>
-                  <p className="text-sm bg-muted/30 p-3 rounded-lg">
-                    {selectedOrder.notes}
-                  </p>
-                </div>
-              )}
-
-              {/* Action Button */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-border">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsModalOpen(false)}
-                  size="sm"
-                >
-                  Close
-                </Button>
-                {statusFlow[selectedOrder.status as keyof typeof statusFlow] && (
-                  <Button
-                    onClick={() => {
-                      const nextStatus =
-                        statusFlow[
-                          selectedOrder.status as keyof typeof statusFlow
-                        ]
-                      if (nextStatus) {
-                        handleStatusChange(selectedOrder.order_id, nextStatus)
-                      }
-                    }}
-                    size="sm"
-                  >
-                    {getNextButtonLabel(selectedOrder.status)}
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <OrderDetailsDialog
+        isDialogOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        selectedOrder={selectedOrder}
+        riders={riders}
+        statusConfig={statusConfig}
+        statusFlow={statusFlow}
+        onStatusChange={handleStatusChange}
+        onSaveNotes={handleSaveNotes}
+        onRiderAssign={handleRiderAssign}
+      />
     </div>
   )
 }
