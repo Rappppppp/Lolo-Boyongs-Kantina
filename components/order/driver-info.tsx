@@ -1,28 +1,26 @@
 'use client';
 
+import { Order } from '@/app/types/order';
 import { Phone, MessageCircle, Star, MapPin, Clock } from 'lucide-react';
 import { useState } from 'react';
 
-interface DriverInfoProps {
-  status: string;
+interface OrderProps {
+  order: Order
 }
 
-export default function DriverInfo({ status }: DriverInfoProps) {
+export default function DriverInfo({ order }: OrderProps) {
   const [showRating, setShowRating] = useState(false);
   const [rating, setRating] = useState(0);
-
-  const isDeliveryStarted = ['on_way', 'arrived', 'completed'].includes(status);
-  const isCompleted = status === 'completed';
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
       {/* Driver card */}
-      {isDeliveryStarted ? (
+      {order?.rider ? (
         <>
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Your Rider</h3>
-              <p className="text-sm text-muted-foreground">Alex Johnson</p>
+              <h3 className="text-sm text-muted-foreground">Your Rider</h3>
+              <p className="text-lg font-semibold text-foreground">{order.rider.name}</p>
             </div>
             <div className="text-right">
               <div className="flex items-center gap-1">
@@ -34,28 +32,6 @@ export default function DriverInfo({ status }: DriverInfoProps) {
           </div>
 
           {/* Driver avatar and stats */}
-          <div className="text-center mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary to-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold">
-              AJ
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="p-3 bg-orange-50 rounded-lg">
-                <p className="text-xs text-muted-foreground mb-1">ETA</p>
-                <p className="font-semibold text-foreground">5 min</p>
-              </div>
-              <div className="p-3 bg-orange-50 rounded-lg">
-                <p className="text-xs text-muted-foreground mb-1">Distance</p>
-                <p className="font-semibold text-foreground">2.3 km</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Vehicle info */}
-          <div className="p-4 bg-gray-50 rounded-lg mb-6">
-            <p className="text-xs text-muted-foreground mb-2">Vehicle</p>
-            <p className="font-semibold text-foreground">🏍️ Honda PCX 160</p>
-            <p className="text-sm text-muted-foreground">License: AB-123-CD</p>
-          </div>
 
           {/* Action buttons */}
           <div className="flex gap-3 mb-6">
@@ -114,7 +90,7 @@ export default function DriverInfo({ status }: DriverInfoProps) {
       )}
 
       {/* Rating section (shown after delivery) */}
-      {isCompleted && (
+      {/* {isCompleted && (
         <div className="mt-6 pt-6 border-t border-gray-100">
           <h4 className="font-medium text-foreground mb-4">Rate Your Delivery</h4>
           <div className="flex justify-center gap-2 mb-4">
@@ -138,7 +114,7 @@ export default function DriverInfo({ status }: DriverInfoProps) {
             </p>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 }

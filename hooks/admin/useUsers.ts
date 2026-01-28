@@ -1,32 +1,111 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useCallback } from "react"
 import { useApi } from "@/hooks/use-api"
-import { Rider } from "@/app/types/order"
+import { User } from "@/app/types/user"
+
+export type UserRole = "admin" | "rider" | "user"
 
 export function useUsers() {
-    const [loading, setLoading] = useState(false)
+    const api = useApi<{ data: User[]; meta: { current_page: number; last_page: number } }>("/admin/users");
 
-    // GET /admin/order
-    const listApi = useApi<{ data: Rider[] }>("/admin/users", "GET")
+    /**
+     * READ (list)
+     */
+    const fetchUsers = useCallback(
+        async (params?: { page?: number; search?: string; role?: UserRole }) => {
+            const query = new URLSearchParams();
+            if (params?.page) query.set("page", params.page.toString());
+            if (params?.search) query.set("search", params.search);
+            if (params?.role) query.set("role", params.role);
 
-    // ✅ Fetch orders
-    const fetchUsers = useCallback(async (role?: string) => {
-        setLoading(true)
-        try {
-            const res = await listApi.callApi({
-                urlOverride: `/admin/users/${role}`,
+            const res = await api.callApi({ urlOverride: `/admin/users?${query.toString()}` });
+            return res
+        },
+        [api]
+    );
+
+    /**
+     * CREATE
+     */
+    const createUser = useCallback(
+        async (payload: Partial<User> & { password: string }) => {
+            const res = await api.callApi({
+                method: "POST",
+                urlOverride: "/admin/users",
+                body: payload,
             })
+
             return res.data
-        } catch (err: any) {
-            throw err
-        } finally {
-            setLoading(false)
-        }
-    }, [listApi.callApi])
+        },
+        [api]
+    )
+
+    /**
+     * UPDATE
+     */
+    const updateUser = useCallback(
+        async (id: number, payload: Partial<User>) => {
+            const res = await api.callApi({
+                method: "PUT",
+                urlOverride: `/admin/users/${id}`,
+                body: payload,
+            })
+
+            return res.data
+        },
+        [api]
+    )
+
+    /**
+     * SOFT DELETE
+     */
+    const deleteUser = useCallback(
+        async (id: number) => {
+            await api.callApi({
+                method: "DELETE",
+                urlOverride: `/admin/users/${id}`,
+            })
+        },
+        [api]
+    )
+
+    /**
+     * RESTORE (soft-deleted)
+     */
+    const restoreUser = useCallback(
+        async (id: number) => {
+            const res = await api.callApi({
+                method: "POST",
+                urlOverride: `/admin/users/${id}/restore`,
+            })
+
+            return res.data
+        },
+        [api]
+    )
+
+    /**
+     * FORCE DELETE
+     */
+    const forceDeleteUser = useCallback(
+        async (id: number) => {
+            await api.callApi({
+                method: "DELETE",
+                urlOverride: `/admin/users/${id}/force`,
+            })
+        },
+        [api]
+    )
 
     return {
         fetchUsers,
-        loading: loading || listApi.loading,
+        createUser,
+        updateUser,
+        deleteUser,
+        restoreUser,
+        forceDeleteUser,
+        loading: api.loading,
+        error: api.error,
     }
 }

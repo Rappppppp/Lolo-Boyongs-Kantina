@@ -106,20 +106,16 @@ export default function OrderStatusPage() {
                 </div>
 
                 {/* div content grid */}
-                <div className="grid lg:grid-cols-3 gap-8">
+                <div className="grid gap-8">
                     {/* Left column - Status tracker */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="space-y-6">
                         <OrderStatusTracker
                             order={order}
                             refreshCount={refreshCount}
                         />
+                        <DriverInfo order={order} />
                         <OrderDetails order={order} />
-                    </div>
 
-                    {/* Right column - Driver info and chat */}
-                    <div className="space-y-6">
-                        <DriverInfo status={order.status} />
-                        <OrderChat />
                     </div>
                 </div>
             </div>

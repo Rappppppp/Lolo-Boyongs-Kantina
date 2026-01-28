@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 export function useRegister() {
   const router = useRouter();
-  const { data, loading: apiLoading, error: apiError, callApi } = useApi("/register", "POST");
+  const { data, loading: apiLoading, error: apiError, callApi } = useApi("/register");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +26,7 @@ export function useRegister() {
 
     try {
       const response = await callApi({
+        method: "POST",
         body: {
           first_name: payload.firstName,
           last_name: payload.lastName,

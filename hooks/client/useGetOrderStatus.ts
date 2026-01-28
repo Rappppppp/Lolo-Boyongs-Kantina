@@ -6,9 +6,9 @@ export const useGetOrderStatus = () => {
 
     const getOrderStatus = async (orderId: string) => {
 
-        const response = await callApi({ 
+        const response = await callApi({
             urlOverride: `/ordering/${orderId}`
-         })
+        })
 
         // console.log("Order Status Response:", response);
 

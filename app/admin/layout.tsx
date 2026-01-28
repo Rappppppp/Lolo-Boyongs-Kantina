@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { LayoutDashboard, Settings, BarChart3, Package, Clock, Pizza, Home, Utensils } from "lucide-react"
+import { LayoutDashboard, Settings, BarChart3, Package, Clock, Pizza, Home, Utensils, Users } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -38,13 +38,14 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   const menuItems = [
-    { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/admin/food-category", icon: Utensils, label: "Food Category" },
-    // { href: "/admin/inventory", icon: Package, label: "Inventory" },
-    { href: "/admin/menu", icon: Pizza, label: "Menu" },
-    { href: "/admin/orders", icon: Clock, label: "Orders" },
-    // { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
-    // { href: "/admin/settings", icon: Settings, label: "Settings" },
+    { href: "", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "users", icon: Users, label: "Users" },
+    { href: "food-category", icon: Utensils, label: "Food Category" },
+    // { href: "inventory", icon: Package, label: "Inventory" },
+    { href: "menu", icon: Pizza, label: "Menu" },
+    { href: "orders", icon: Clock, label: "Orders" },
+    // { href: "analytics", icon: BarChart3, label: "Analytics" },
+    // { href: "settings", icon: Settings, label: "Settings" },
   ]
 
   if (!isReady) return null;
@@ -73,7 +74,7 @@ export default function AdminLayout({
           {menuItems.map((item) => (
             <Link
               key={item.href}
-              href={item.href}
+              href={`/admin/${item.href}`}
               className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-muted transition"
             >
               <item.icon className="w-5 h-5" />

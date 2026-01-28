@@ -1,42 +1,59 @@
 // hooks/useApi.ts
-"use client";
+"use client"
 
-import { useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { useState } from "react"
+import { apiFetch } from "@/lib/api"
+
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
 
 interface CallApiOptions {
-  body?: any;
-  token?: string;
-  urlOverride?: string;
-  isFormData?: boolean;
+  method?: HttpMethod
+  body?: unknown
+  token?: string
+  urlOverride?: string
+  isFormData?: boolean
 }
 
-export function useApi<T = any>(
-  endpoint: string,
-  method: "GET" | "POST" | "PUT" | "DELETE" = "GET"
-) {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export function useApi<T = unknown>(baseEndpoint: string) {
+  const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const callApi = async (options: CallApiOptions = {}) => {
-    const { body, token, urlOverride, isFormData } = options;
-    setLoading(true);
-    setError(null);
+  const callApi = async <R = T>({
+    method = "GET",
+    body,
+    token,
+    urlOverride,
+    isFormData,
+  }: CallApiOptions = {}): Promise<R> => {
+    setLoading(true)
+    setError(null)
 
     try {
-      const response = await apiFetch<T>(endpoint, { method, body, token, urlOverride, isFormData });
-      setData(response);
-      return response;
-    } catch (err: unknown) {
-      // err might not have a 'message', so safely extract it
-      const msg = err && typeof err === "object" && "message" in err ? (err as any).message : "Unknown error";
-      setError(msg);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+      const response = await apiFetch<R>(urlOverride ?? baseEndpoint, {
+        method,
+        body,
+        token,
+        isFormData,
+      })
 
-  return { data, loading, error, callApi };
+      setData(response as unknown as T)
+      return response
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unknown error"
+
+      setError(message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return {
+    data,
+    loading,
+    error,
+    callApi,
+  }
 }

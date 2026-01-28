@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Truck, CheckCircle, Loader2, LogOut } from "lucide-react"
-import { useOrders } from "@/hooks/admin/useOrders"
+import { useOrders } from "@/hooks/rider/useOrders"
 import { Order } from "@/app/types/order"
 import {
     Dialog,
@@ -26,25 +26,25 @@ export default function RiderPage() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-    const { fetchOrders, loading } = useOrders()
+    const { fetchOrders, updateOrderStatus, loading } = useOrders()
 
     useEffect(() => {
-        fetchOrders().then(setOrders).catch(() => { })
+        fetchOrders().then
+            (setOrders).catch(() => { })
     }, [])
-
-    // Filter only "otw" and "completed" orders for rider
-    const riderOrders = useMemo(() => {
-        return orders.filter(order => order.status === "otw" || order.status === "completed")
+    // Separate delivered/completed orders
+    const completedOrders = useMemo(() => {
+        return orders.filter(
+            order => order.status === "completed" || order.status === "delivered"
+        )
     }, [orders])
 
-    // Separate OTW and completed orders
-    const otwOrders = useMemo(() => {
-        return riderOrders.filter(order => order.status === "otw")
-    }, [riderOrders])
-
-    const completedOrders = useMemo(() => {
-        return riderOrders.filter(order => order.status === "completed")
-    }, [riderOrders])
+    // Orders that are not completed/delivered (everything else)
+    const activeOrders = useMemo(() => {
+        return orders.filter(
+            order => order.status !== "completed" && order.status !== "delivered"
+        )
+    }, [orders])
 
     const handleDeliverClick = (order: Order) => {
         setSelectedOrder(order)
@@ -59,13 +59,9 @@ export default function RiderPage() {
                     : order
             ))
             setIsConfirmModalOpen(false)
-            setIsSuccessModalOpen(true)
-
-            // Auto-close success modal after 2 seconds
-            setTimeout(() => {
-                setIsSuccessModalOpen(false)
-                setSelectedOrder(null)
-            }, 2000)
+            setIsSuccessModalOpen(false)
+            setSelectedOrder(null)
+           updateOrderStatus({ order_id: selectedOrder.order_id, status: "delivered" })
         }
     }
 
@@ -82,7 +78,7 @@ export default function RiderPage() {
                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <LogOut className="w-5 h-5" />}
                     </Button>
                 </LogoutModal>
-                
+
                 <h1 className="text-4xl font-bold text-foreground mb-2">
                     Rider Dashboard
                 </h1>
@@ -96,7 +92,7 @@ export default function RiderPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Truck className="w-5 h-5 text-blue-600" />
-                        Orders for Delivery ({otwOrders.length})
+                        Orders for Delivery ({activeOrders.length})
                     </CardTitle>
                 </CardHeader>
 
@@ -105,13 +101,13 @@ export default function RiderPage() {
                         <div className="text-center text-muted-foreground py-8">
                             Loading orders…
                         </div>
-                    ) : otwOrders.length === 0 ? (
+                    ) : activeOrders.length === 0 ? (
                         <div className="text-center text-muted-foreground py-8">
                             No orders to deliver
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {otwOrders.map(order => (
+                            {activeOrders.map(order => (
                                 <div
                                     key={order.order_id}
                                     className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition"

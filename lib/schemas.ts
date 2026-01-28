@@ -67,6 +67,22 @@ export const loginSchema = z.object({
     password: z.string().min(6, "Password is required"),
 });
 
+export const userSchema = z.object({
+    id: z.number().optional(),
+    first_name: z.string().min(1, "First name is required"),
+    last_name: z.string().min(1, "Last name is required"),
+    email: z.string().email("Must be a valid email"),
+    role: z.enum(["user", "rider", "admin"]),
+    phone_number: z.string().optional(),
+    street_address: z.string(),
+    barangay: z.string(),
+    password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .optional()
+    .or(z.literal("")), // allow empty string for optional password
+})
+
 // export const addCategorySchema = z.object({
 //     name: z.string().min(3, "Name is required"),
 //     description: z.string().min(3, "Description is required"),

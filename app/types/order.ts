@@ -1,3 +1,5 @@
+import { Rider } from "./user";
+
 export type OrderItem = {
   order_id: string;
   menu_item_id: string;
@@ -6,12 +8,6 @@ export type OrderItem = {
   quantity: number;
   line_total: number;
 };
-
-export type Rider = {
-  id: string;
-  name: string;
-  phone: string;
-}
 
 export type Order = {
   order_id: string;
