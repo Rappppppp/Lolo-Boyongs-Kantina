@@ -12,7 +12,7 @@ export const useCheckout = () => {
         items: typeof cartItems
     }
 
-    const { data, loading, error, callApi } = useApi("/ordering", "POST");
+    const { data, loading, error, callApi } = useApi("/ordering");
     const { cartItems, clearCart } = useStore();
 
     const checkout = async (checkoutPayload: CheckoutPayload) => {
@@ -28,7 +28,7 @@ export const useCheckout = () => {
             })),
         }
 
-        const response = await callApi({ body: payload })
+        const response = await callApi({ method: 'POST', body: payload })
 
         if (response?.order) {
             clearCart()

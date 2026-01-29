@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Lock, CreditCard, PhilippinePeso } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -64,6 +64,12 @@ export default function CheckoutPage() {
   const total = getCartTotal()
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      router.push('/menu')
+    }
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setProcessing(true)
@@ -99,7 +105,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onCartClick={() => { }} />
 
       <div className="max-w-4xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold text-foreground mb-8">Checkout</h1>

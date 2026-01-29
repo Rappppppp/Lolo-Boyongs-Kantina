@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <Toaster />
+        <Toaster richColors />
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>

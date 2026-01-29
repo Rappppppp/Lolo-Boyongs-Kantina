@@ -45,22 +45,28 @@ export default function Navigation({ onCartClick }: NavigationProps) {
               Admin
             </Link>
           )}
+
           <Link href="/" className="text-foreground hover:text-primary transition font-medium">
             Home
           </Link>
+
           <Link href="/menu" className="text-foreground hover:text-primary transition font-medium">
             Menu
+          </Link>
+          <Link href="/orders" className="text-foreground hover:text-primary transition font-medium">
+            Orders
           </Link>
           <Link href="/reservations" className="text-foreground hover:text-primary transition font-medium">
             Reservations
           </Link>
+
           <Link href="/#about" className="text-foreground hover:text-primary transition font-medium">
             About
           </Link>
         </div>
 
         <div className="flex items-center gap-4">
-          {user && (
+          {user && user.role === 'user' && (
             <Button
               variant="outline"
               size="icon"

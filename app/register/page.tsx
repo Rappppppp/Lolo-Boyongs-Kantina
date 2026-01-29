@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Navigation from "@/components/navigation"
 import { User, Mail, Lock, Loader2 } from "lucide-react"
 import { registerSchema } from "@/lib/schemas"
 import Image from "next/image"
@@ -74,8 +73,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onCartClick={() => { }} />
-
       <div className="max-w-2xl mx-auto px-4 py-12">
         <Card className="border border-border shadow-lg">
           <CardHeader className="space-y-2 text-center">

@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Navigation from "@/components/navigation"
@@ -15,8 +14,6 @@ import MapDialog from "@/components/map-dialog"
 import HomepageGallery from "@/components/homepage-gallery"
 
 export default function Home() {
-  const [cartOpen, setCartOpen] = useState(false)
-
   const testimonials = [
     {
       name: "Sarah Chen",
@@ -44,8 +41,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onCartClick={() => setCartOpen(!cartOpen)} />
-
       {/* Hero Section */}
       <section className="relative min-h-screen bg-black text-primary-foreground overflow-hidden">
 
@@ -407,8 +402,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Cart Sidebar */}
-      <OrderCart isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+    
     </div>
   )
 }

@@ -66,25 +66,27 @@ export default function RiderPage() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 p-12">
             {/* Header */}
-            <div>
+            <div className="flex gap-2">
                 <LogoutModal>
                     <Button
                         variant="ghost"
                         size="icon"
                         disabled={loading}
                     >
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <LogOut className="w-5 h-5" />}
+                        {loading ? <Loader2 className="w-12 h-12 animate-spin" /> : <LogOut className="w-5 h-5" />}
                     </Button>
                 </LogoutModal>
 
-                <h1 className="text-4xl font-bold text-foreground mb-2">
+                <div>
+                    <h1 className="text-4xl font-bold text-foreground mb-2">
                     Rider Dashboard
                 </h1>
                 <p className="text-muted-foreground">
                     Manage your deliveries and mark orders as completed
                 </p>
+                </div>
             </div>
 
             {/* OTW Orders */}

@@ -15,7 +15,8 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
   // Calculate totals from API data
   const subtotal = order.items_total
   // const delivery = 2.0; // or fetch from API if dynamic
-  const total = subtotal // + delivery;
+  const tax =  (subtotal * 1.12) - subtotal // 12% tax//
+  const total = subtotal * 1.12 // + delivery;
 
   return (
     <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
@@ -37,7 +38,7 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
             {/* Replace with dynamic address if available */}
 
             <p className="font-medium text-foreground"><b>Email: </b>{order.email}</p>
-            <p className="text-sm text-muted-foreground">{order.notes && `Notes: ${ order.notes}` || 'No delivery notes'}</p>
+            <p className="text-sm text-muted-foreground">{order.notes && `Notes: ${order.notes}` || 'No delivery notes'}</p>
             <a href={`mailto:${appConfig.email}`} className="text-primary text-sm font-medium mt-2 hover:underline flex items-center gap-1 cursor-pointer">
               <Mail className="w-4 h-4" />
               Need Immediate Notify? Email Customer Admin
@@ -86,6 +87,10 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
         <div className="flex justify-between text-sm text-muted-foreground">
           <span>Subtotal</span>
           <span>₱{subtotal?.toFixed(2)}</span>
+        </div>
+         <div className="flex justify-between text-sm text-muted-foreground">
+          <span>Tax (12% vat)</span>
+          <span>₱{tax.toFixed(2)}</span>
         </div>
         {/* <div className="flex justify-between text-sm text-muted-foreground">
           <span>Delivery Fee</span>

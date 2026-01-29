@@ -12,7 +12,8 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Edit2, Phone, Mail, MapPin, Users, Save, X } from 'lucide-react'
-import { Order, OrderItem, Rider } from '@/app/types/order'
+import { Order, OrderItem } from '@/app/types/order'
+import { User } from '@/app/types/user'
 
 interface StatusConfig {
     [key: string]: {
@@ -29,12 +30,12 @@ interface OrderDetailsDialogProps {
     isDialogOpen: boolean
     onOpenChange: (open: boolean) => void
     selectedOrder: Order | null
-    riders: Rider[]
+    riders: User[]
     statusConfig: StatusConfig
     statusFlow: StatusFlow
     onStatusChange: (orderId: string, newStatus: string) => void
     onSaveNotes: (orderId: string, notes: string) => void
-    onRiderAssign: (order: Order, rider: Rider) => void
+    onRiderAssign: (order: Order, rider: User) => void
 }
 
 export function OrderDetailsDialog({
@@ -69,7 +70,7 @@ export function OrderDetailsDialog({
         setIsEditingNotes(false)
     }
 
-    const handleRiderSelect = (riderId: string) => {
+    const handleRiderSelect = (riderId: number) => {
         const rider = riders.find((r) => r.id === riderId)
         if (!rider || !selectedOrder) return
         onRiderAssign(selectedOrder, rider)
@@ -233,7 +234,7 @@ export function OrderDetailsDialog({
                                     : 'Assigned Rider'}
                             </p>
 
-                            {selectedOrder.status === 'confirmed' ? (
+                            {selectedOrder.status === 'confirmed' || selectedOrder.status === 'pending' ? (
                                 <Select value={selectedOrder?.rider?.id ?? ''} onValueChange={handleRiderSelect}>
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select a rider" />
@@ -241,7 +242,7 @@ export function OrderDetailsDialog({
                                     <SelectContent>
                                         {riders.map((rider) => (
                                             <SelectItem key={rider.id} value={rider.id}>
-                                                {rider.name}
+                                                {rider.first_name} {rider.last_name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -262,7 +263,7 @@ export function OrderDetailsDialog({
                                 </div>
                             ) : (
                                 <p className="text-sm text-muted-foreground py-2">
-                                    No rider assigned yet
+                                    No rider assigned yet.
                                 </p>
                             )}
                         </div>

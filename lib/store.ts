@@ -122,7 +122,7 @@ export const useStore = create<Store>((set, get) => ({
   getCartTotal: () => {
     const state = get()
     const subtotal = state.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    return subtotal * 1.1 // 10% tax
+    return subtotal * 1.12 // 10% tax
   },
 
   getCartCount: () => {

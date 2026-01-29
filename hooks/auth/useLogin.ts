@@ -6,12 +6,13 @@ import { useStore } from "@/lib/store";
 import Cookies from "js-cookie";
 
 export function useLogin() {
-  const { data, loading, error, callApi } = useApi("/login", "POST");
+  const { data, loading, error, callApi } = useApi("/login");
 
   const { setUser } = useStore();
 
   const login = async (email: string, password: string) => {
     const response = await callApi({
+      method: "POST",
       body: { email, password }
     });
 

@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Navigation from "@/components/navigation"
 import { Mail, Lock, EyeOff, Eye, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { loginSchema } from "@/lib/schemas"
@@ -95,8 +94,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onCartClick={() => { }} />
-
       <div className="max-w-md mx-auto px-4 py-12">
         <Card className="border border-border shadow-lg">
           <CardHeader className="space-y-2 text-center">

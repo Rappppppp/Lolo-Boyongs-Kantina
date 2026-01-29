@@ -10,21 +10,21 @@ import { toast } from "sonner"
 interface UpdateStatusPayload {
   order_id: string
   status: string
-  rider_id?: string
+  rider_id?: number
 }
 
 export function useOrders() {
   const [loading, setLoading] = useState(false)
 
   // GET /admin/order
-  const listApi = useApi<{ data: Order[] }>("/admin/order", "GET")
+  const listApi = useApi<{ data: Order[] }>("/ordering/get-orders") //("/admin/order")
 
   // PUT /admin/order/update
   const updateApi = useApi<{
     message: string
     status?: string
-    rider_id?: string
-  }>("/admin/order/update", "PUT")
+    rider_id?: number
+  }>("/admin/order/update")
 
   // ✅ Fetch orders
   const fetchOrders = useCallback(async () => {
@@ -45,6 +45,7 @@ export function useOrders() {
     async (payload: UpdateStatusPayload) => {
       try {
         const res = await updateApi.callApi({
+          method: "PUT",
           body: payload,
         })
         toast.success(`Successfully updated order status to ${payload.status.toUpperCase()}`)

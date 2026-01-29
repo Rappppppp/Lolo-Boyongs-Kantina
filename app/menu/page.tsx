@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Navigation from "@/components/navigation"
-import MenuSection from "@/components/menu-section"
-import OrderCart from "@/components/order-cart"
 import { useMenuItems } from "@/hooks/client/useMenuItems"
+import MenuSection from "@/components/menu-section"
 
 export default function MenuPage() {
   const [cartOpen, setCartOpen] = useState(false)
@@ -27,8 +25,6 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onCartClick={() => setCartOpen(!cartOpen)} />
-
       <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 py-12 border-b-3 border-primary/20">
         <div className="max-w-6xl mx-auto px-4">
           <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
@@ -52,8 +48,6 @@ export default function MenuPage() {
               />
             ))}
           </div>
-
-          <OrderCart isOpen={cartOpen} onClose={() => setCartOpen(false)} />
         </div>
       </div>
     </div>

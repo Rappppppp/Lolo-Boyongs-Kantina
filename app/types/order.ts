@@ -1,4 +1,4 @@
-import { Rider } from "./user";
+import { User } from "./user";
 
 export type OrderItem = {
   order_id: string;
@@ -19,7 +19,7 @@ export type Order = {
   created_at_human: string;
 
   // Additional fields
-  rider: Rider | null;
+  rider: User | null;
 
   receipient_name?: string;
   phone_number?: string;

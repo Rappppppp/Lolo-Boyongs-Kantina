@@ -7,7 +7,6 @@ import { Calendar, Clock, Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import Navigation from "@/components/navigation"
 import { useStore } from "@/lib/store"
 import { useRouter } from "next/navigation"
 
@@ -42,11 +41,6 @@ export default function ReservationsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation
-        // cartCount={0} 
-        onCartClick={() => { }}
-      />
-
       <div className="max-w-2xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">Reserve Your Table</h1>
