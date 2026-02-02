@@ -10,7 +10,7 @@ interface OrderDetailsProps {
 }
 
 export default function OrderDetails({ order }: OrderDetailsProps) {
-  const [expandedItems, setExpandedItems] = useState(false);
+  // const [expandedItems, setExpandedItems] = useState(false);
 
   // Calculate totals from API data
   const subtotal = order.items_total

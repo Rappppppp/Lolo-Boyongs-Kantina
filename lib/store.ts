@@ -1,3 +1,4 @@
+import { Reservation } from "@/app/types/reservations"
 import { create } from "zustand"
 
 interface CartItem {
@@ -42,6 +43,12 @@ export interface InventoryItem {
   status: Status
 }
 
+interface ReservationState {
+  reservations: Reservation[];
+  setReservations: (res: Reservation[]) => void;
+  addReservation: (res: Reservation) => void;
+}
+
 interface Store {
   // Auth
   user: User | null
@@ -80,6 +87,7 @@ interface Store {
   addFilepondFile: (file: string) => void
   flushFilepond: () => void
 }
+
 
 export const useStore = create<Store>((set, get) => ({
   // User
@@ -191,3 +199,10 @@ export const useSessionStore = create<SessionState>((set) => ({
   },
   clearTTL: () => set({ ttl: null }),
 }))
+
+export const useReservationStore = create<ReservationState>((set) => ({
+  reservations: [],
+  setReservations: (res) => set({ reservations: res }),
+  addReservation: (res) =>
+    set((state) => ({ reservations: [res, ...state.reservations] })),
+}));

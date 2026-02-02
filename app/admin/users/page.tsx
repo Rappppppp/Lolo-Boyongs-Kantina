@@ -63,7 +63,7 @@ export default function UsersTablePage() {
         fetchUsers({ page, search })
             .then(res => {
                 setUsers(res.data);
-                setTotalPages(res.meta.last_page);
+                setTotalPages(res.meta?.last_page);
             })
             .catch(console.error);
     }, [page, search]);

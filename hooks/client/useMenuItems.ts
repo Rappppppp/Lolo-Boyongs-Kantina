@@ -26,7 +26,7 @@ export interface PaginatedResponse<T> {
 }
 
 export function useMenuItems() {
-  const { loading, error, callApi } = useApi<PaginatedResponse<MenuItem>>("/menu-item", "GET");
+  const { loading, error, callApi } = useApi<PaginatedResponse<MenuItem>>("/menu-item");
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
