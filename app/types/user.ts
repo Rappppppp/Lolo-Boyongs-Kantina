@@ -1,7 +1,7 @@
 export type Role = "admin" | "user" | "rider"
 
 export type Rider = {
-  id: string;
+  id: number;
   name: string;
   phone: string;
 }

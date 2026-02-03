@@ -49,7 +49,7 @@ export default function ReservationsPage() {
   }, []);
 
   useEffect(() => {
-    
+
     fetchReservations()
       .then((res) => {
         setReservations(res)
@@ -184,7 +184,7 @@ export default function ReservationsPage() {
 
             {/* Reservation Form */}
             <Card className="border shadow-sm sticky top-24">
-              <CardHeader className="bg-primary text-primary-foreground pb-6">
+              <CardHeader className="bg-primary text-primary-foreground p-6">
                 <CardTitle className="text-2xl">Create New Reservation</CardTitle>
               </CardHeader>
               <CardContent className="p-8">
@@ -339,8 +339,7 @@ export default function ReservationsPage() {
                       key={r.id}
                       className="border shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group"
                     >
-                      <div className="h-1 bg-gradient-to-r from-primary to-accent" />
-                      <CardContent className="p-5">
+                      <CardContent>
                         <div className="flex items-start justify-between gap-3 mb-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
@@ -365,15 +364,11 @@ export default function ReservationsPage() {
                             </div>
                           </div>
                         </div>
-
-                        <div className="bg-muted rounded-lg p-3 flex items-center justify-between border border-border group-hover:border-accent/30 transition-colors">
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4 text-accent" />
-                            <span className="text-sm font-medium text-foreground">
-                              {r.guests} {r.guests === 1 ? "guest" : "guests"}
-                            </span>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-accent" />
+                          <span className="text-sm font-medium text-foreground">
+                            {r.guests} {r.guests === 1 ? "guest" : "guests"}
+                          </span>
                         </div>
                       </CardContent>
                     </Card>

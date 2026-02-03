@@ -13,12 +13,19 @@ import { useOrders } from "@/hooks/admin/useOrders"
 import { useUsers } from "@/hooks/admin/useUsers"
 import { usePathname, useRouter } from "next/navigation"
 
-const statusConfig = {
-    pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
-    confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
-    otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
-    delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
+type OrderStatus = "pending" | "confirmed" | "otw" | "delivered"
+
+const statusConfig: Record<OrderStatus, {
+  label: string
+  icon: React.ForwardRefExoticComponent<any>
+  color: string
+}> = {
+  pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
+  confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
+  otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
+  delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
 }
+
 
 const statusFlow = {
     pending: "confirmed",
@@ -148,7 +155,7 @@ export function OrdersManager() {
                     ) : (
                         <div className="space-y-3">
                             {filteredOrders.map(order => {
-                                const config = statusConfig[order.status]
+                                const config = statusConfig[order.status as OrderStatus]
 
                                 return (
                                     <div

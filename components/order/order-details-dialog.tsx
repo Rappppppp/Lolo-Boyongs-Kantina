@@ -67,11 +67,14 @@ export function OrderDetailsDialog({
         setIsEditingNotes(false)
     }
 
-    const handleRiderSelect = (riderId: number) => {
+    const handleRiderSelect = (value: string) => {
+        const riderId = Number(value)
         const rider = riders.find((r) => r.id === riderId)
-        if (!rider || !selectedOrder) return
-        onRiderAssign(selectedOrder, rider)
+        if (rider && selectedOrder) {
+            onRiderAssign(selectedOrder, rider)
+        }
     }
+
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
@@ -197,8 +200,8 @@ export function OrderDetailsDialog({
                                     <div
                                         key={idx}
                                         className={`flex justify-between items-center px-5 py-3 ${idx !== selectedOrder.items.length - 1
-                                                ? 'border-b border-border'
-                                                : ''
+                                            ? 'border-b border-border'
+                                            : ''
                                             }`}
                                     >
                                         <div className="flex-1">
@@ -232,13 +235,19 @@ export function OrderDetailsDialog({
                             </p>
 
                             {selectedOrder.status === 'confirmed' || selectedOrder.status === 'pending' ? (
-                                <Select value={selectedOrder?.rider?.id ?? ''} onValueChange={handleRiderSelect}>
+                                <Select
+                                    value={selectedOrder?.rider?.id?.toString() ?? ''}
+                                    onValueChange={handleRiderSelect}
+                                >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select a rider" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {riders.map((rider) => (
-                                            <SelectItem key={rider.id} value={rider.id}>
+                                            <SelectItem
+                                                key={rider.id}
+                                                value={rider.id.toString()}
+                                            >
                                                 {rider.first_name} {rider.last_name}
                                             </SelectItem>
                                         ))}
@@ -251,10 +260,10 @@ export function OrderDetailsDialog({
                                     </div>
                                     <div className="flex-1">
                                         <p className="font-semibold text-green-900 dark:text-green-100">
-                                            {selectedOrder.rider.name}
+                                            {selectedOrder.rider.first_name}  {selectedOrder.rider.last_name}
                                         </p>
                                         <p className="text-xs text-green-700 dark:text-green-300">
-                                            {selectedOrder.rider.phone}
+                                            {selectedOrder.rider.phone_number}
                                         </p>
                                     </div>
                                 </div>
