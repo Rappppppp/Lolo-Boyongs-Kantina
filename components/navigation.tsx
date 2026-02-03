@@ -66,7 +66,7 @@ export default function Navigation({ onCartClick }: NavigationProps) {
         </div>
 
         <div className="flex items-center gap-4">
-          {user && user.role === 'user' && (
+          {user && user.role !== 'rider' && (
             <Button
               variant="outline"
               size="icon"

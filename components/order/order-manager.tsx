@@ -11,6 +11,7 @@ import { User } from "@/app/types/user"
 import { OrderDetailsDialog } from "@/components/order/order-details-dialog"
 import { useOrders } from "@/hooks/admin/useOrders"
 import { useUsers } from "@/hooks/admin/useUsers"
+import { usePathname, useRouter } from "next/navigation"
 
 const statusConfig = {
     pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
@@ -33,6 +34,9 @@ export function OrdersManager() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
     const [selectedRider, setSelectedRider] = useState<User | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+      const pathname = usePathname();
+    const router = useRouter();
 
     const { fetchOrders, updateOrderStatus, loading } = useOrders()
     const { fetchUsers } = useUsers()
@@ -176,7 +180,11 @@ export function OrdersManager() {
                                                 variant="outline"
                                                 onClick={() => {
                                                     setSelectedOrder(order)
-                                                    setIsDialogOpen(true)
+                                                    if (pathname.includes('/admin')) {
+                                                        setIsDialogOpen(true)
+                                                    } else {
+                                                        router.push(`/checkout/status?orderId=${order.order_id}`)
+                                                    }
                                                 }}
                                             >
                                                 View

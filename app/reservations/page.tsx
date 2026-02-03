@@ -183,7 +183,7 @@ export default function ReservationsPage() {
             </div>
 
             {/* Reservation Form */}
-            <Card className="border shadow-sm">
+            <Card className="border shadow-sm sticky top-24">
               <CardHeader className="bg-primary text-primary-foreground pb-6">
                 <CardTitle className="text-2xl">Create New Reservation</CardTitle>
               </CardHeader>

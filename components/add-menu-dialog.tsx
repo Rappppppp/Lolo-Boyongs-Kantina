@@ -67,7 +67,7 @@ export function AddMenuDialog({
 
   const { toast } = useToast();
 
-  const { callApi, loading } = useApi("/admin/menu-item", "POST")
+  const { callApi, loading } = useApi("/admin/menu-item")
   const { refresh } = useCategories()
   const { fileUpload } = useFilepond()
 
@@ -169,6 +169,7 @@ export function AddMenuDialog({
   const submit = async () => {
     try {
       await callApi({
+        method: "POST",
         body: {
           name,
           description,

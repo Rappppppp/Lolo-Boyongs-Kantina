@@ -51,15 +51,12 @@ export function OrderDetailsDialog({
 }: OrderDetailsDialogProps) {
     const [isEditingNotes, setIsEditingNotes] = useState(false)
     const [editedNotes, setEditedNotes] = useState(selectedOrder?.notes || '')
-
-
     const getNextButtonLabel = (status: string) => {
         if (status === 'pending') return 'Confirm'
         if (status === 'confirmed') return 'Start Delivery'
         if (status === 'otw') return 'Mark Completed'
         return 'Next'
     }
-
 
     const handleStatusChange = (orderId: string, newStatus: string) => {
         onStatusChange(orderId, newStatus)
