@@ -148,7 +148,7 @@ export default function RiderPage() {
                                             className="bg-green-600 hover:bg-green-700 text-white"
                                             size="sm"
                                         >
-                                            Delivered
+                                            Confirm Delivery
                                         </Button>
                                     </div>
                                 </div>

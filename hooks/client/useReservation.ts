@@ -57,13 +57,16 @@ export function useReservation() {
 
   // ✅ Update reservation
   const updateReservation = useCallback(
-    async (payload: UpdateReservationPayload) => {
+    async (payload: UpdateReservationPayload & { reservation_id: number }) => {
       setLoading(true);
       try {
+
         const res = await updateApi.callApi({
           method: "PUT",
-          body: payload,
+          urlOverride: `/reservation/${payload.reservation_id}`,
+          body: payload, 
         });
+
         toast.success("Reservation updated successfully!");
         return res.reservation;
       } catch (err: any) {

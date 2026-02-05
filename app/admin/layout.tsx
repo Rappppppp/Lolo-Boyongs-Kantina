@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { LayoutDashboard, Settings, BarChart3, Package, Clock, Pizza, Home, Utensils, Users } from "lucide-react"
+import { LayoutDashboard, Settings, BarChart3, Package, Clock, Pizza, Home, Utensils, Users, Table } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -44,38 +44,39 @@ export default function AdminLayout({
     // { href: "inventory", icon: Package, label: "Inventory" },
     { href: "menu", icon: Pizza, label: "Menu" },
     { href: "orders", icon: Clock, label: "Orders" },
+    { href: "reservations", icon: Table, label: "Reservations" },
     // { href: "analytics", icon: BarChart3, label: "Analytics" },
     // { href: "settings", icon: Settings, label: "Settings" },
   ]
 
   if (!isReady) return null;
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-white">
       {/* Sidebar */}
       <aside
         className={`${sidebarOpen ? "w-64" : "w-20"} bg-card border-r border-border transition-all duration-300 flex flex-col`}
       >
-        <div className="p-6 flex items-center justify-between">
-          {sidebarOpen && <span className="text-lg font-bold text-foreground">{appConfig.name}</span>}
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-muted rounded">
+        <div className="p-6 flex items-center justify-between bg-gradient-to-br from-primary to-orange-400 text-white">
+          {sidebarOpen && <span className="text-lg font-bold">{appConfig.name}</span>}
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-orange-700 rounded cursor-pointer">
             {sidebarOpen ? "←" : "→"}
           </button>
         </div>
 
-        <nav className="flex-1 space-y-2 px-4">
+        <nav className="flex-1 space-y-2 px-4 py-3 bg-primary text-white">
           <Link
             href='/'
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-muted transition"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-700 transition"
           >
             <Home className="w-5 h-5" />
             {sidebarOpen && <span className="text-sm">Homepage</span>}
           </Link>
-          <div className="w-full h-px bg-foreground/10"></div>
+          <div className="w-full h-px bg-white/50"></div>
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={`/admin/${item.href}`}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-muted transition"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-orange-700 transition"
             >
               <item.icon className="w-5 h-5" />
               {sidebarOpen && <span className="text-sm">{item.label}</span>}
@@ -83,9 +84,9 @@ export default function AdminLayout({
           ))}
         </nav>
 
-        <div className="p-4 border-t border-border">
+        <div className="p-4  bg-gradient-to-br from-primary to-orange-400">
           <LogoutModal>
-            <Button variant="outline" className="w-full text-sm bg-transparent" size="sm">
+            <Button className="w-full text-sm border border-orange-300" size="sm">
               {sidebarOpen ? "Logout" : "Exit"}
             </Button>
           </LogoutModal>
@@ -94,10 +95,10 @@ export default function AdminLayout({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-card border-b border-border px-8 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Restaurant Admin</h1>
+        <header className="bg-gradient-to-br from-primary to-orange-400 text-white border-b border-border px-8 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Restaurant Admin</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Logged in as <b>{user?.firstName}</b></span>
+            <span className="text-sm">Logged in as <b>{user?.firstName}</b></span>
           </div>
         </header>
 

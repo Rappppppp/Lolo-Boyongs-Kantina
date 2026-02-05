@@ -12,6 +12,7 @@ import { Dialog } from "@radix-ui/react-dialog"
 import { DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import MapDialog from "@/components/map-dialog"
 import HomepageGallery from "@/components/homepage-gallery"
+import QrPaymentDialog from "@/components/qr-payment-dialog"
 
 export default function Home() {
   const testimonials = [
@@ -188,36 +189,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button size="lg" variant="outline" className="cursor-pointer">
-                      <QrCode className="h-5 w-5" />
-                      Show QR Payment
-                    </Button>
-                  </DialogTrigger>
-
-                  <DialogContent
-                    className="w-full sm:max-w-5xl max-h-[95vh] overflow-y-auto p-6"
-                  >
-                    {/* Accessible title */}
-                    <DialogTitle>QR Payment</DialogTitle>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <img
-                        src="/resto/qr-gcash.jpg"
-                        alt="GCash QR Payment"
-                        className="w-full object-cover shadow-lg rounded-lg"
-                      />
-
-                      <img
-                        src="/resto/qr-maya.jpg"
-                        alt="Maya QR Payment"
-                        className="w-full object-cover shadow-lg rounded-lg"
-                      />
-                    </div>
-                  </DialogContent>
-                </Dialog>
-
+                <QrPaymentDialog />
 
               </CardContent>
             </Card>

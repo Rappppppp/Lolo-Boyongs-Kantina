@@ -171,7 +171,7 @@ export function OrdersManager() {
 
                                         <div className="flex items-center gap-4">
                                             <div className="text-right">
-                                                <p className="font-semibold">₱{order.items_total}</p>
+                                                <p className="font-semibold">₱{(order.items_total + (order.items_total * 0.12)).toFixed(2)}</p>
                                                 <p className="text-xs text-muted-foreground">
                                                     {order.created_at_human}
                                                 </p>

@@ -17,6 +17,7 @@ export interface MenuItem {
   price: string;
   price_raw: number;
   images: MenuImage[];
+  description?: string;
 }
 
 export interface PaginatedResponse<T> {

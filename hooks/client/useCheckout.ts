@@ -1,3 +1,4 @@
+import { Order } from "@/app/types/order";
 import { useApi } from "@/hooks/use-api";
 import { useStore } from "@/lib/store";
 
@@ -30,8 +31,12 @@ export const useCheckout = () => {
 
         const response = await callApi({ method: 'POST', body: payload })
 
-        if (response?.order) {
-            clearCart()
+        if (
+            typeof response === "object" &&
+            response !== null &&
+            "order" in response
+        ) {
+            clearCart();
         }
 
         return response

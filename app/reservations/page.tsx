@@ -5,7 +5,7 @@ import React from "react"
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Calendar, Clock, Users, CheckCircle, AlertCircle, ChevronRight, Sparkles } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useReservationStore, useStore } from "@/lib/store";
@@ -184,10 +184,13 @@ export default function ReservationsPage() {
 
             {/* Reservation Form */}
             <Card className="border shadow-sm sticky top-24">
-              <CardHeader className="bg-primary text-primary-foreground p-6">
+              <CardHeader className=" text-foreground ">
                 <CardTitle className="text-2xl">Create New Reservation</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Quick 30-second reservation
+                </CardDescription>
               </CardHeader>
-              <CardContent className="p-8">
+              <CardContent >
                 {/* Info Box */}
                 <div className="bg-muted rounded-lg p-5 mb-8 border border-border">
                   <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
@@ -359,7 +362,7 @@ export default function ReservationsPage() {
                                   r.status
                                 )}`}
                               >
-                                {r.status || "Pending"}
+                                {r.status || "pending"}
                               </span>
                             </div>
                           </div>

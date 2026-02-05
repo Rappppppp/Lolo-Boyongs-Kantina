@@ -20,7 +20,7 @@ export default function DriverInfo({ order }: OrderProps) {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h3 className="text-sm text-muted-foreground">Your Rider</h3>
-              <p className="text-lg font-semibold text-foreground">{order.rider.name}</p>
+              <p className="text-lg font-semibold text-foreground">{order.rider.first_name} {order.rider.last_name}</p>
             </div>
             <div className="text-right">
               <div className="flex items-center gap-1">
@@ -46,7 +46,7 @@ export default function DriverInfo({ order }: OrderProps) {
           </div>
 
           {/* Live location */}
-          <div className="p-4 bg-gradient-to-r from-primary/10 to-orange-100 rounded-lg">
+          {/* <div className="p-4 bg-gradient-to-r from-primary/10 to-orange-100 rounded-lg">
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-primary" />
               <span className="font-medium text-primary">Live Tracking</span>
@@ -54,7 +54,7 @@ export default function DriverInfo({ order }: OrderProps) {
             <div className="w-full h-32 bg-white rounded-lg border border-primary/20 flex items-center justify-center">
               <p className="text-sm text-muted-foreground">📍 Driver location</p>
             </div>
-          </div>
+          </div> */}
         </>
       ) : (
         <>

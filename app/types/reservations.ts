@@ -1,9 +1,13 @@
+import { type User } from "./user";
+
 export type Reservation = {
   id: number;
+  user: User;
   guests: number;
   date: string;
   time: string;
   status: string;
+  notes?: string;
   created_at: string;
   updated_at: string;
 };

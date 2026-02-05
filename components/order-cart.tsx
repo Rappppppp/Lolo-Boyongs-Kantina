@@ -76,8 +76,13 @@ export default function OrderCart({ isOpen, onClose }: OrderCartProps) {
                       <Button
                         size="icon"
                         variant="outline"
-                        className="w-6 h-6 bg-transparent"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className={`w-6 h-6 bg-transparent ${item.quantity <= 1 && "opacity-50"}`}
+                        disabled={item.quantity <= 1}
+                        onClick={() => {
+                          if (item.quantity >= 1) {
+                            updateQuantity(item.id, item.quantity - 1)
+                          }
+                        }}
                       >
                         <Minus className="w-3 h-3" />
                       </Button>
@@ -90,7 +95,12 @@ export default function OrderCart({ isOpen, onClose }: OrderCartProps) {
                         size="icon"
                         variant="outline"
                         className="w-6 h-6 bg-transparent"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        disabled={item.quantity >= 20}
+                        onClick={() => {
+                          if (item.quantity < 20) {
+                            updateQuantity(item.id, item.quantity + 1)
+                          }
+                        }}
                       >
                         <Plus className="w-3 h-3" />
                       </Button>
