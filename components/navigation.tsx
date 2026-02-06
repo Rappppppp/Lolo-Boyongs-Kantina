@@ -99,138 +99,183 @@ export default function Navigation({ onCartClick }: NavigationProps) {
   }, [cartCount, pathname, onCartClick, router, toast])
 
   return (
-    <nav
-      className={[
-        "sticky top-0 z-50 hidden md:block",
-        "bg-gradient-to-br from-primary to-orange-400",
-        "text-white shadow-sm transition-transform duration-300",
-        showNavbar ? "translate-y-0" : "-translate-y-full",
-      ].join(" ")}
-    >
-      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80">
-          <img
-            src="/app-logo.jpg"
-            alt={appConfig.name}
-            className="w-12 h-12 rounded-full"
-          />
-          <span className="text-xl font-bold">{appConfig.name}</span>
-        </Link>
+    <>
+      {/* Mobile Toggle */}
+      <div className={`md:hidden fixed top-5 right-5 z-50 bg-transparent backdrop-blur-md border ${mobileMenuOpen ? 'border-none' : 'border-primary'} p-1 rounded-lg cursor-pointer`} onClick={() => setMobileMenuOpen(v => !v)}>
+        {mobileMenuOpen ? (
+          <X className="text-white w-6 h-6" />
+        ) : (
+          <MenuIcon className="text-primary w-6 h-6" />
+        )}
+      </div>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
-          {user?.role === "admin" && (
-            <Link href="/admin" className="relative group font-medium">
-              <span>Admin</span>
-              <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-white origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
-            </Link>
-          )}
-
-          {NAV_LINKS.map(link => {
-            const active = isActive(link.href)
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="relative group font-medium"
-              >
-                <span>{link.label}</span>
-                <span
-                  className={[
-                    "absolute left-0 -bottom-1 h-[2px] w-full bg-white",
-                    "origin-left scale-x-0 transition-transform duration-300",
-                    "group-hover:scale-x-100",
-                    active && "scale-x-100",
-                  ].join(" ")}
-                />
-              </Link>
-            )
-          })}
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-4">
-          {user && user.role !== "rider" && (
-            <Button
-              // variant="outline"
-              size="icon"
-              onClick={handleCartClick}
-              className={`relative ${cartCount > 0 ? "bg-red-700" : "bg-transparent"}`}
+      {/* Mobile Menu */}
+      <div
+        className={`md:hidden fixed top-0 left-0 w-full h-screen bg-gradient-to-br from-primary to-orange-400 text-white z-40 transition-transform duration-300 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+      >
+        <div className="flex flex-col items-center justify-center h-full gap-6 text-xl">
+          {NAV_LINKS.map(link => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:opacity-80"
             >
-              <ShoppingCart className="w-5 h-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 w-5 h-5 text-xs font-bold rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Button>
+              {link.label}
+            </Link>
+          ))}
+
+          {user && user.role !== "rider" && (
+            <button onClick={handleCartClick} className="mt-4">
+              Cart ({cartCount})
+            </button>
           )}
 
-          {/* User Dropdown */}
           {user ? (
-            <Menu as="div" className="relative">
-              <Menu.Button className="flex items-center gap-2 px-3 py-2">
-                <span className="font-medium">{user.firstName}</span>
-                <ChevronDown className="w-4 h-4" />
-              </Menu.Button>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
+            <LogoutModal>
+              <button
+                disabled={loading}
+                className="mt-4 text-red-600"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <Menu.Items className="absolute right-0 mt-2 w-56 rounded-xl bg-white text-gray-800 shadow-lg focus:outline-none overflow-hidden">
-                  <div className="px-4 py-3 border-b">
-                    <p className="text-sm font-medium">{user.firstName}</p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {user.email}
-                    </p>
-                  </div>
-
-                  <Menu.Item>
-                    {() => (
-                      <LogoutModal>
-                        <button
-                          disabled={loading}
-                          className="w-full px-4 py-2 flex items-center gap-2 text-sm text-red-600 hover:bg-red-50 transition"
-                        >
-                          {loading
-                            ? <Loader2 className="w-4 h-4 animate-spin" />
-                            : <LogOut className="w-4 h-4" />}
-                          Logout
-                        </button>
-                      </LogoutModal>
-                    )}
-                  </Menu.Item>
-                </Menu.Items>
-              </Transition>
-            </Menu>
+                {loading ? "Logging out..." : "Logout"}
+              </button>
+            </LogoutModal>
           ) : (
-            <div className="hidden md:flex gap-2">
-              <Button className="bg-transparent" asChild>
-                <Link href="/login">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/register">Sign Up</Link>
-              </Button>
+            <div className="flex flex-col gap-2 mt-4">
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
+              <Link href="/register" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
             </div>
           )}
-
-          {/* Mobile Toggle */}
-          <button
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(v => !v)}
-          >
-            {mobileMenuOpen ? <X /> : <MenuIcon />}
-          </button>
         </div>
       </div>
-    </nav>
+
+      <nav
+        className={[
+          "sticky top-0 z-50 hidden md:block",
+          "bg-gradient-to-br from-primary to-orange-400",
+          "text-white shadow-sm transition-transform duration-300",
+          showNavbar ? "translate-y-0" : "-translate-y-full",
+        ].join(" ")}
+      >
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80">
+            <img
+              src="/app-logo.jpg"
+              alt={appConfig.name}
+              className="w-12 h-12 rounded-full"
+            />
+            <span className="text-xl font-bold">{appConfig.name}</span>
+          </Link>
+
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center gap-8">
+            {user?.role === "admin" && (
+              <Link href="/admin" className="relative group font-medium">
+                <span>Admin</span>
+                <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-white origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
+              </Link>
+            )}
+
+            {NAV_LINKS.map(link => {
+              const active = isActive(link.href)
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="relative group font-medium"
+                >
+                  <span>{link.label}</span>
+                  <span
+                    className={[
+                      "absolute left-0 -bottom-1 h-[2px] w-full bg-white",
+                      "origin-left scale-x-0 transition-transform duration-300",
+                      "group-hover:scale-x-100",
+                      active && "scale-x-100",
+                    ].join(" ")}
+                  />
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-4">
+            {user && user.role !== "rider" && (
+              <Button
+                // variant="outline"
+                size="icon"
+                onClick={handleCartClick}
+                className={`relative ${cartCount > 0 ? "bg-red-700" : "bg-transparent"}`}
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 w-5 h-5 text-xs font-bold rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+            )}
+
+            {/* User Dropdown */}
+            {user ? (
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center gap-2 px-3 py-2">
+                  <span className="font-medium">{user.firstName}</span>
+                  <ChevronDown className="w-4 h-4" />
+                </Menu.Button>
+
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 mt-2 w-56 rounded-xl bg-white text-gray-800 shadow-lg focus:outline-none overflow-hidden">
+                    <div className="px-4 py-3 border-b">
+                      <p className="text-sm font-medium">{user.firstName}</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {user.email}
+                      </p>
+                    </div>
+
+                    <Menu.Item>
+                      {() => (
+                        <LogoutModal>
+                          <button
+                            disabled={loading}
+                            className="w-full px-4 py-2 flex items-center gap-2 text-sm text-red-600 hover:bg-red-50 transition"
+                          >
+                            {loading
+                              ? <Loader2 className="w-4 h-4 animate-spin" />
+                              : <LogOut className="w-4 h-4" />}
+                            Logout
+                          </button>
+                        </LogoutModal>
+                      )}
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            ) : (
+              <div className="hidden md:flex gap-2">
+                <Button className="bg-transparent" asChild>
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/register">Sign Up</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+    </>
   )
 }

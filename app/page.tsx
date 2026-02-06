@@ -45,7 +45,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen bg-black text-primary-foreground overflow-hidden">
 
-        <img src="/hero-bg.jpg" alt="Lolo Boyong's Kantina" className="absolute inset-0 w-full h-full object-cover opacity-50 blur-sm" />
+        <img src="/resto/2.jpg" alt="Lolo Boyong's Kantina" className="absolute inset-0 w-full h-full object-cover opacity-40 blur-xs" />
 
         {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
@@ -261,11 +261,6 @@ export default function Home() {
                   </div>
                   <p className="text-foreground mb-6 text-lg italic">"{testimonial.content}"</p>
                   <div className="flex items-center gap-4">
-                    <img
-                      src={testimonial.image || "/placeholder.svg"}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full"
-                    />
                     <div>
                       <div className="font-semibold text-foreground">{testimonial.name}</div>
                       <div className="text-sm text-muted-foreground">{testimonial.role}</div>

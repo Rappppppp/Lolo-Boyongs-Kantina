@@ -39,14 +39,17 @@ export default function MenuPage() {
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="flex flex-col lg:flex-row gap-10">
           <div className="flex-1 space-y-16">
-            {Object.entries(groupedItems).map(([key, items]) => (
+            {
+            groupedItems.length > 0 ?
+            Object.entries(groupedItems).map(([key, items]) => (
               <MenuSection
                 key={key}
                 title={items[0]?.category || key}
                 description={items[0]?.description ?? `Delicious ${items[0]?.category || key}`}
                 items={items}
               />
-            ))}
+            )) : <div className="text-center text-gray-500">No menu items found ☹️</div>
+            }
           </div>
         </div>
       </div>
