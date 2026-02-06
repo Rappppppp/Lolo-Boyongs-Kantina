@@ -33,6 +33,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
             const target = e.currentTarget as HTMLImageElement;
             target.onerror = null; // prevent infinite loop if placeholder fails
             target.src = "/resto/1.jpg";
+            target.className = "w-full h-full object-cover transition-opacity duration-500 aspect-video";
           }}
         />
 

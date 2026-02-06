@@ -90,7 +90,7 @@ export default function MenuSection({ title, description, items = [], loading, e
 
                 {/* Footer with price and action */}
                 <div className="menu-card-footer flex items-center justify-between gap-2 text-sm text-muted-foreground">
-                  <span className="price-tag">₱{item.price}</span>
+                  <h2 className="price-tag text-primary text-3xl font-bold">₱{item.price}</h2>
 
                   {user ? (
                     <Button
@@ -98,7 +98,7 @@ export default function MenuSection({ title, description, items = [], loading, e
                         addToCart(item)
                         toast.success(`${item.name} added to cart`, { position: "bottom-left" })
                       }}
-                      className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-semibold rounded-full px-4 py-2 shadow-lg transition-all duration-300 hover:shadow-xl"
+                      className="bg-gradient-to-r from-primary to-accent font-semibold rounded-full px-4 py-2 shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer"
                     >
                       <Plus className="w-4 h-4 mr-1" />
                       Add

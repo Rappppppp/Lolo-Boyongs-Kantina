@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 
 import { useRouter } from "next/navigation"
 import QrPaymentDialog from "@/components/qr-payment-dialog"
+import Link from "next/link"
 
 type OrderItem = {
   order_id: string
@@ -178,19 +179,26 @@ export default function CheckoutPage() {
                 </label>
               </div>
 
-              <Button type="submit" size="lg" className="w-full gap-2" disabled={processing}>
-                {processing ? (
-                  <>
-                    <div className="animate-spin w-4 h-4 border-2 border-transparent border-t-current rounded-full"></div>
-                    Processing Payment...
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-4 h-4" />
-                    Complete Purchase ₱{total.toFixed(2)}
-                  </>
-                )}
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button type="submit" size="lg" className="w-full gap-2" disabled={processing}>
+                  {processing ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-transparent border-t-current rounded-full"></div>
+                      Processing Payment...
+                    </>
+                  ) : (
+                    <>
+                      Complete Order
+                    </>
+                  )}
+                </Button>
+
+                <Link href='/menu'>
+                  <Button size="lg" variant='secondary' className="w-full" disabled={processing}>
+                    Continue Shopping
+                  </Button>
+                </Link>
+              </div>
             </form>
           </div>
 

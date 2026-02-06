@@ -111,7 +111,7 @@ export default function Navigation({ onCartClick }: NavigationProps) {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden fixed top-0 left-0 w-full h-screen bg-gradient-to-br from-primary to-orange-400 text-white z-40 transition-transform duration-300 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        className={`md:hidden fixed top-0 left-0 w-full h-screen bg-linear-to-br from-primary to-orange-400 text-white z-40 transition-transform duration-300 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
       >
         <div className="flex flex-col items-center justify-center h-full gap-6 text-xl">
@@ -136,7 +136,7 @@ export default function Navigation({ onCartClick }: NavigationProps) {
             <LogoutModal>
               <button
                 disabled={loading}
-                className="mt-4 text-red-600"
+                className="mt-4"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {loading ? "Logging out..." : "Logout"}
@@ -167,14 +167,14 @@ export default function Navigation({ onCartClick }: NavigationProps) {
               alt={appConfig.name}
               className="w-12 h-12 rounded-full"
             />
-            <span className="text-xl font-bold">{appConfig.name}</span>
+            <h1 className="text-xl">{appConfig.name}</h1>
           </Link>
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
             {user?.role === "admin" && (
               <Link href="/admin" className="relative group font-medium">
-                <span>Admin</span>
+                <h3>Admin</h3>
                 <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-white origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
               </Link>
             )}
@@ -188,7 +188,7 @@ export default function Navigation({ onCartClick }: NavigationProps) {
                   href={link.href}
                   className="relative group font-medium"
                 >
-                  <span>{link.label}</span>
+                  <h3>{link.label}</h3>
                   <span
                     className={[
                       "absolute left-0 -bottom-1 h-[2px] w-full bg-white",

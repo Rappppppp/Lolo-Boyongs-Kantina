@@ -102,7 +102,7 @@ export function Boyong() {
 
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="h-14 w-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center overflow-hidden cursor-pointer"
+                    className="h-14 w-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center overflow-hidden cursor-pointer hover:scale-110"
                     aria-label="Open chat with Boyong"
                 >
                     {isOpen ? <X className="h-6 w-6" /> : (

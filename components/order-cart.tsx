@@ -107,7 +107,7 @@ export default function OrderCart({ isOpen, onClose }: OrderCartProps) {
 
                       <button
                         onClick={() => removeFromCart(item.id)}
-                        className="ml-2 p-1 hover:bg-destructive/10 rounded text-destructive transition"
+                        className="ml-2 p-1 hover:bg-destructive/10 rounded text-destructive transition cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
