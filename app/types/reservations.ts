@@ -16,6 +16,8 @@ export interface CreateReservationPayload {
   guests: number;
   date: string;
   time: string;
+  status: string;
+  notes?: string
 }
 
 export interface UpdateReservationPayload {
@@ -24,4 +26,5 @@ export interface UpdateReservationPayload {
   date?: string;
   time?: string;
   status?: string;
+  notes?: string,
 }

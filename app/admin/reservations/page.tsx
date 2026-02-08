@@ -4,13 +4,13 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, User } from "lucide-react"
+import { Calendar, Loader2, User } from "lucide-react"
 import { ReservationDetailsDialog } from "@/components/reservations/reservation-dialog"
 import { Reservation } from "@/app/types/reservations"
 import { useReservation } from "@/hooks/client/useReservation"
 import { Dialog, DialogTitle, DialogDescription, DialogContent, DialogFooter } from "@/components/ui/dialog"
 
-const statusColors = {
+export const statusColors = {
   confirmed: "bg-green-100 text-green-800",
   pending: "bg-amber-100 text-amber-800",
   cancelled: "bg-red-100 text-red-800",
@@ -196,6 +196,7 @@ export default function ReservationsAdminPage() {
               onClick={handleConfirmAction}
               disabled={loading}
             >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               {actionType === "confirmed"
                 ? "Confirm"
                 : actionType === "cancelled"

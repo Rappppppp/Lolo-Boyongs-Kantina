@@ -4,7 +4,7 @@ import React from "react"
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Clock, Users, CheckCircle, AlertCircle, ChevronRight, Sparkles } from "lucide-react";
+import { Calendar, Clock, Users, CheckCircle, AlertCircle, ChevronRight, Sparkles, NotebookPen } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import z from "zod";
 
 import { Reservation } from "../types/reservations";
 import { useReservation } from "@/hooks/client/useReservation";
+import CancelReservationStatusDialog from "@/components/reservations/client-cancel-status-dialog";
 
 type ReservationForm = z.infer<typeof reservationSchema>;
 type ReservationErrors = z.ZodFormattedError<ReservationForm>;
@@ -29,6 +30,9 @@ export default function ReservationsPage() {
   const [guestCustom, setGuestCustom] = useState("");
   const [errors, setErrors] = useState<ReservationErrors | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [isCancelReservationDialogOpen, setIsCancelReservationDialogOpen] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+  const [notes, setNotes] = useState("");
 
   const { createReservation, fetchReservations, loading } = useReservation();
   const { reservations, setReservations, addReservation } = useReservationStore();
@@ -65,6 +69,7 @@ export default function ReservationsPage() {
         date,
         time,
         guests,
+        notes,
       });
 
       if (!result.success) {
@@ -78,7 +83,9 @@ export default function ReservationsPage() {
         const newRes = await createReservation({
           date,
           time,
+          status: 'pending',
           guests: Number(guests),
+          notes,
         });
 
         // unwrap .data from the hook API
@@ -294,6 +301,26 @@ export default function ReservationsPage() {
                     </div>
                   )}
 
+                  {/* Notes */}
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground mb-3">
+                      Notes
+                    </label>
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Add notes for this order..."
+                      className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                      rows={3}
+                    />
+
+                    {errors?.notes?._errors[0] && (
+                      <p className="text-sm text-destructive mt-2 flex items-center gap-1">
+                        <AlertCircle className="w-4 h-4" /> {errors.notes._errors[0]}
+                      </p>
+                    )}
+                  </div>
+
                   <Button
                     type="submit"
                     className="w-full py-6 text-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-all duration-200"
@@ -344,7 +371,7 @@ export default function ReservationsPage() {
                     >
                       <CardContent>
                         <div className="flex items-start justify-between gap-3 mb-4">
-                          <div className="flex-1">
+                          <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-2 mb-2">
                               <Calendar className="w-4 h-4 text-accent" />
                               <p className="font-semibold text-foreground">{r.date}</p>
@@ -352,6 +379,18 @@ export default function ReservationsPage() {
                             <div className="flex items-center gap-2 text-foreground/75">
                               <Clock className="w-4 h-4 text-accent" />
                               <p className="text-sm">{r.time}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="w-4 h-4 text-accent" />
+                              <span className="text-sm font-medium text-foreground">
+                                {r.guests} {r.guests === 1 ? "guest" : "guests"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <NotebookPen className="w-4 h-4 text-accent" />
+                              <span className="text-sm font-medium text-foreground">
+                                {r.notes || "No notes added."}
+                              </span>
                             </div>
                           </div>
                           <div className="text-right">
@@ -365,14 +404,15 @@ export default function ReservationsPage() {
                                 {r.status || "pending"}
                               </span>
                             </div>
+                            {(r.status === 'pending' || r.status === null) &&
+                              <Button variant='destructive' size='sm' onClick={() => {
+                                setSelectedReservation(r);
+                                setIsCancelReservationDialogOpen(true);
+                              }}>Cancel</Button>
+                            }
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-accent" />
-                          <span className="text-sm font-medium text-foreground">
-                            {r.guests} {r.guests === 1 ? "guest" : "guests"}
-                          </span>
-                        </div>
+
                       </CardContent>
                     </Card>
                   ))}
@@ -382,6 +422,8 @@ export default function ReservationsPage() {
           </div>
         </div>
       </div>
+
+      <CancelReservationStatusDialog selectedReservation={selectedReservation} isCancelDialogOpen={isCancelReservationDialogOpen} setIsCancelDialogOpen={setIsCancelReservationDialogOpen} setSelectedReservation={setSelectedReservation} setReservations={setReservations} />
     </div>
   );
 }

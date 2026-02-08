@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Check, Truck } from "lucide-react"
+import { Clock, Check, Truck, X } from "lucide-react"
 
 import { Order } from "@/app/types/order"
 import { User } from "@/app/types/user"
@@ -13,7 +13,7 @@ import { useOrders } from "@/hooks/admin/useOrders"
 import { useUsers } from "@/hooks/admin/useUsers"
 import { usePathname, useRouter } from "next/navigation"
 
-type OrderStatus = "pending" | "confirmed" | "otw" | "delivered"
+type OrderStatus = "pending" | "confirmed" | "otw" | "delivered" | "cancelled"
 
 const statusConfig: Record<OrderStatus, {
   label: string
@@ -24,6 +24,7 @@ const statusConfig: Record<OrderStatus, {
   confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
   otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
   delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
+  cancelled: { label: "Cancelled", icon: X, color: "bg-red-100 text-red-800" },
 }
 
 
@@ -215,6 +216,8 @@ export function OrdersManager() {
                 onStatusChange={handleStatusChange}
                 onSaveNotes={handleSaveNotes}
                 onRiderAssign={handleRiderAssign}
+                setSelectedOrder={setSelectedOrder}
+                setOrders={setOrders}
             />
         </div>
     )

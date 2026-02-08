@@ -45,7 +45,7 @@ export interface InventoryItem {
 
 interface ReservationState {
   reservations: Reservation[];
-  setReservations: (res: Reservation[]) => void;
+  setReservations: (res: Reservation[] | ((prev: Reservation[]) => Reservation[])) => void;
   addReservation: (res: Reservation) => void;
 }
 
@@ -215,7 +215,8 @@ export const useSessionStore = create<SessionState>((set) => ({
 
 export const useReservationStore = create<ReservationState>((set) => ({
   reservations: [],
-  setReservations: (res) => set({ reservations: res }),
+  setReservations: (res) =>
+    set((state) => ({ reservations: typeof res === "function" ? res(state.reservations) : res })),
   addReservation: (res) =>
     set((state) => ({ reservations: [res, ...state.reservations] })),
 }));
