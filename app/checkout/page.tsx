@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 import { useRouter } from "next/navigation"
+import QrPaymentDialog from "@/components/qr-payment-dialog"
+import Link from "next/link"
 
 type OrderItem = {
   order_id: string
@@ -85,7 +87,7 @@ export default function CheckoutPage() {
     }
 
     try {
-      const res = await checkout(payload);
+      const res = await checkout(payload) as { order: Order };
 
       setProcessing(false)
       setCompleted(true);
@@ -116,7 +118,7 @@ export default function CheckoutPage() {
               {/* Delivery Information */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Delivery Address</CardTitle>
+                  <CardTitle>Delivery Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
 
@@ -147,10 +149,10 @@ export default function CheckoutPage() {
                     required
                   />
 
-                  <Label className="mb-1">Address <span className="text-red-500">*</span></Label>
+                  <Label className="mb-1">Delivery Address <span className="text-red-500">*</span></Label>
                   <Input
                     defaultValue={`${user?.streetAddress}, ${user?.barangay}`}
-                    placeholder="Street Address"
+                    placeholder="Delivery Address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     required
@@ -165,6 +167,7 @@ export default function CheckoutPage() {
 
                   <Label className="mb-1">GCash Ref. No <span className="text-red-500">*</span></Label>
                   <Input placeholder="Enter the reference number" type="text" required />
+                  <QrPaymentDialog />
                 </CardContent>
               </Card>
 
@@ -176,19 +179,26 @@ export default function CheckoutPage() {
                 </label>
               </div>
 
-              <Button type="submit" size="lg" className="w-full gap-2" disabled={processing}>
-                {processing ? (
-                  <>
-                    <div className="animate-spin w-4 h-4 border-2 border-transparent border-t-current rounded-full"></div>
-                    Processing Payment...
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-4 h-4" />
-                    Complete Purchase ₱{total.toFixed(2)}
-                  </>
-                )}
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button type="submit" size="lg" className="w-full gap-2" disabled={processing}>
+                  {processing ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-transparent border-t-current rounded-full"></div>
+                      Processing Payment...
+                    </>
+                  ) : (
+                    <>
+                      Complete Order
+                    </>
+                  )}
+                </Button>
+
+                <Link href='/menu'>
+                  <Button size="lg" variant='secondary' className="w-full" disabled={processing}>
+                    Continue Shopping
+                  </Button>
+                </Link>
+              </div>
             </form>
           </div>
 

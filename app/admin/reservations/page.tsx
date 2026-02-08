@@ -1,68 +1,74 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, User } from "lucide-react"
+import { Calendar, Loader2, User } from "lucide-react"
+import { ReservationDetailsDialog } from "@/components/reservations/reservation-dialog"
+import { Reservation } from "@/app/types/reservations"
+import { useReservation } from "@/hooks/client/useReservation"
+import { Dialog, DialogTitle, DialogDescription, DialogContent, DialogFooter } from "@/components/ui/dialog"
 
-const reservations = [
-  {
-    id: "RES-001",
-    name: "John Doe",
-    date: "2024-12-25",
-    time: "19:00",
-    guests: 4,
-    phone: "+1-555-0123",
-    status: "confirmed",
-  },
-  {
-    id: "RES-002",
-    name: "Jane Smith",
-    date: "2024-12-25",
-    time: "20:00",
-    guests: 2,
-    phone: "+1-555-0124",
-    status: "confirmed",
-  },
-  {
-    id: "RES-003",
-    name: "Bob Wilson",
-    date: "2024-12-26",
-    time: "18:30",
-    guests: 6,
-    phone: "+1-555-0125",
-    status: "pending",
-  },
-  {
-    id: "RES-004",
-    name: "Alice Brown",
-    date: "2024-12-26",
-    time: "19:30",
-    guests: 3,
-    phone: "+1-555-0126",
-    status: "confirmed",
-  },
-]
-
-const statusColors = {
+export const statusColors = {
   confirmed: "bg-green-100 text-green-800",
   pending: "bg-amber-100 text-amber-800",
   cancelled: "bg-red-100 text-red-800",
+  completed: "bg-blue-100 text-blue-800",
 }
 
 export default function ReservationsAdminPage() {
   const [filter, setFilter] = useState("all")
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [actionType, setActionType] = useState<"confirmed" | "cancelled" | "completed" | null>(null)
+  const [reservations, setReservations] = useState<Reservation[]>([])
 
-  const filteredReservations = filter === "all" ? reservations : reservations.filter((r) => r.status === filter)
+  const filteredReservations =
+    filter === "all"
+      ? reservations
+      : reservations.filter((r) => r.status === filter)
+
+  const { loading, fetchReservations, updateReservation } = useReservation()
+
+  useEffect(() => {
+    fetchReservations().then(setReservations)
+  }, [])
+
+  const handleActionClick = (
+    reservation: Reservation,
+    type: "confirmed" | "cancelled" | "completed"
+  ) => {
+    setSelectedReservation(reservation)
+    setActionType(type)
+    setIsConfirmDialogOpen(true)
+  }
+
+  const handleConfirmAction = async () => {
+    if (!selectedReservation || !actionType) return
+
+    await updateReservation({
+      reservation_id: selectedReservation.id,
+      status: actionType,
+    })
+    setReservations((prev) =>
+      prev.map((r) =>
+        r.id === selectedReservation.id ? { ...r, status: actionType } : r
+      )
+    )
+    setIsConfirmDialogOpen(false)
+    setSelectedReservation(null)
+    setActionType(null)
+  }
 
   return (
     <div>
+      {/* Header & Filter */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-foreground mb-4">Reservations</h2>
-
         <div className="flex gap-2">
-          {["all", "confirmed", "pending", "cancelled"].map((status) => (
+          {["all", "confirmed", "pending", "cancelled", "completed"].map((status) => (
             <Button
               key={status}
               variant={filter === status ? "default" : "outline"}
@@ -75,47 +81,131 @@ export default function ReservationsAdminPage() {
         </div>
       </div>
 
+      {/* Reservations List */}
       <Card>
         <CardHeader>
           <CardTitle>Reservations ({filteredReservations.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {filteredReservations.map((res) => (
+            {filteredReservations.map((r) => (
               <div
-                key={res.id}
+                key={r.id}
                 className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition"
               >
                 <div className="flex items-center gap-4 flex-1">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <User className="w-5 h-5 text-primary" />
-                  </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-foreground">{res.name}</p>
+                    <p className="font-semibold text-foreground">
+                      {r.user.first_name} {r.user.last_name}
+                    </p>
                     <div className="flex gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        {res.date} at {res.time}
+                        {r.date} at {r.time}
                       </span>
-                      <span>{res.guests} guests</span>
+                      <span>{r.guests} guests</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <a href={`tel:${res.phone}`} className="text-primary hover:underline text-sm">
-                    {res.phone}
-                  </a>
-                  <Badge className={statusColors[res.status as keyof typeof statusColors]}>{res.status}</Badge>
-                  <Button size="sm" variant="outline">
+                  <Badge
+                    className={statusColors[r.status as keyof typeof statusColors]}
+                  >
+                    {r.status}
+                  </Badge>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedReservation(r)
+                      setIsDetailsDialogOpen(true)
+                    }}
+                  >
                     Details
                   </Button>
+
+                  {r.status !== "confirmed" && (
+                    <Button
+                      size="sm"
+                      variant="success"
+                      onClick={() => handleActionClick(r, "confirmed")}
+                    >
+                      Set as Confirmed
+                    </Button>
+                  )}
+
+                  {r.status !== "cancelled" && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleActionClick(r, "cancelled")}
+                    >
+                      Set as Cancelled
+                    </Button>
+                  )}
+
+                  {r.status !== "completed" && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => handleActionClick(r, "completed")}
+                    >
+                      Set as Completed
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
+
+      {/* Reservation Details Dialog */}
+      <ReservationDetailsDialog
+        isOpen={isDetailsDialogOpen}
+        onOpenChange={setIsDetailsDialogOpen}
+        reservation={selectedReservation}
+      />
+
+      {/* Confirm Action Dialog */}
+      <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+        <DialogContent>
+          <DialogTitle>Confirm Action</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to {actionType} this reservation?
+          </DialogDescription>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsConfirmDialogOpen(false)}
+            >
+              Close
+            </Button>
+            <Button
+              variant={
+                actionType === "confirmed"
+                  ? "success"
+                  : actionType === "cancelled"
+                  ? "destructive"
+                  : "secondary"
+              }
+              size="sm"
+              onClick={handleConfirmAction}
+              disabled={loading}
+            >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {actionType === "confirmed"
+                ? "Confirm"
+                : actionType === "cancelled"
+                ? "Cancel"
+                : "Complete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

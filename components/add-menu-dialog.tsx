@@ -67,7 +67,7 @@ export function AddMenuDialog({
 
   const { toast } = useToast();
 
-  const { callApi, loading } = useApi("/admin/menu-item", "POST")
+  const { callApi, loading } = useApi("/admin/menu-item")
   const { refresh } = useCategories()
   const { fileUpload } = useFilepond()
 
@@ -166,9 +166,11 @@ export function AddMenuDialog({
     flushFilepond()
   }
 
-  const submit = async () => {
+  const handleSubmit = async () => {
     try {
       await callApi({
+        method: type === 'Edit' ? "PUT" : "POST",
+        urlOverride: type === 'Edit' ? `/admin/menu-item/${item?.id}` : '/admin/menu-item',
         body: {
           name,
           description,
@@ -353,7 +355,7 @@ export function AddMenuDialog({
           >
             Cancel
           </Button>
-          <Button onClick={submit} disabled={loading || !isFormValid}>
+          <Button onClick={handleSubmit} disabled={loading || !isFormValid}>
             {loading ?
               `${type == 'Edit' ?
                 'Editing' :

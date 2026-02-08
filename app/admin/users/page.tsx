@@ -63,10 +63,11 @@ export default function UsersTablePage() {
         fetchUsers({ page, search })
             .then(res => {
                 setUsers(res.data);
-                setTotalPages(res.meta.last_page);
+                setTotalPages(res.meta?.last_page);
             })
             .catch(console.error);
     }, [page, search]);
+
     // Open create form
     const openCreate = () => {
         setEditingUser(null)
@@ -140,7 +141,7 @@ export default function UsersTablePage() {
     }
 
     // Render
-    if (loading) return <AdminSkeleton />
+    // if (loading) return <AdminSkeleton />
 
     return (
         <div className="space-y-6">
@@ -161,6 +162,8 @@ export default function UsersTablePage() {
                 </div>
             </div>
 
+            {loading ? <AdminSkeleton /> :
+            
             <Card>
                 <CardHeader>
                     <CardTitle>Users ({users.length})</CardTitle>
@@ -228,6 +231,8 @@ export default function UsersTablePage() {
                     </div>
                 </CardContent>
             </Card>
+            }
+
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>

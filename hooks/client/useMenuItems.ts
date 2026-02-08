@@ -17,6 +17,7 @@ export interface MenuItem {
   price: string;
   price_raw: number;
   images: MenuImage[];
+  description?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -26,7 +27,7 @@ export interface PaginatedResponse<T> {
 }
 
 export function useMenuItems() {
-  const { loading, error, callApi } = useApi<PaginatedResponse<MenuItem>>("/menu-item", "GET");
+  const { loading, error, callApi } = useApi<PaginatedResponse<MenuItem>>("/menu-item");
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 

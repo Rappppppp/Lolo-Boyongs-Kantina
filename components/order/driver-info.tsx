@@ -17,24 +17,24 @@ export default function DriverInfo({ order }: OrderProps) {
       {/* Driver card */}
       {order?.rider ? (
         <>
-          <div className="flex items-start justify-between mb-6">
+          <div className="flex items-start justify-between"> 
             <div>
               <h3 className="text-sm text-muted-foreground">Your Rider</h3>
-              <p className="text-lg font-semibold text-foreground">{order.rider.name}</p>
+              <p className="text-lg font-semibold text-foreground">{order.rider.first_name} {order.rider.last_name}</p>
             </div>
-            <div className="text-right">
+            {/* <div className="text-right">
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-primary text-primary" />
                 <span className="font-semibold text-foreground">4.95</span>
               </div>
               <p className="text-xs text-muted-foreground">1,240 trips</p>
-            </div>
+            </div> */}
           </div>
 
           {/* Driver avatar and stats */}
 
           {/* Action buttons */}
-          <div className="flex gap-3 mb-6">
+          {/* <div className="flex gap-3 mb-6">
             <button className="flex-1 bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition flex items-center justify-center gap-2">
               <Phone className="w-4 h-4" />
               Call
@@ -43,10 +43,10 @@ export default function DriverInfo({ order }: OrderProps) {
               <MessageCircle className="w-4 h-4" />
               Message
             </button>
-          </div>
+          </div> */}
 
           {/* Live location */}
-          <div className="p-4 bg-gradient-to-r from-primary/10 to-orange-100 rounded-lg">
+          {/* <div className="p-4 bg-gradient-to-r from-primary/10 to-orange-100 rounded-lg">
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-primary" />
               <span className="font-medium text-primary">Live Tracking</span>
@@ -54,7 +54,7 @@ export default function DriverInfo({ order }: OrderProps) {
             <div className="w-full h-32 bg-white rounded-lg border border-primary/20 flex items-center justify-center">
               <p className="text-sm text-muted-foreground">📍 Driver location</p>
             </div>
-          </div>
+          </div> */}
         </>
       ) : (
         <>

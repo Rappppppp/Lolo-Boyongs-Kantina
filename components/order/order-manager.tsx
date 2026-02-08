@@ -4,20 +4,29 @@ import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Check, Truck } from "lucide-react"
+import { Clock, Check, Truck, X } from "lucide-react"
 
 import { Order } from "@/app/types/order"
 import { User } from "@/app/types/user"
 import { OrderDetailsDialog } from "@/components/order/order-details-dialog"
 import { useOrders } from "@/hooks/admin/useOrders"
 import { useUsers } from "@/hooks/admin/useUsers"
+import { usePathname, useRouter } from "next/navigation"
 
-const statusConfig = {
-    pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
-    confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
-    otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
-    delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
+type OrderStatus = "pending" | "confirmed" | "otw" | "delivered" | "cancelled"
+
+const statusConfig: Record<OrderStatus, {
+  label: string
+  icon: React.ForwardRefExoticComponent<any>
+  color: string
+}> = {
+  pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
+  confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
+  otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
+  delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
+  cancelled: { label: "Cancelled", icon: X, color: "bg-red-100 text-red-800" },
 }
+
 
 const statusFlow = {
     pending: "confirmed",
@@ -33,6 +42,9 @@ export function OrdersManager() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
     const [selectedRider, setSelectedRider] = useState<User | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+      const pathname = usePathname();
+    const router = useRouter();
 
     const { fetchOrders, updateOrderStatus, loading } = useOrders()
     const { fetchUsers } = useUsers()
@@ -144,7 +156,7 @@ export function OrdersManager() {
                     ) : (
                         <div className="space-y-3">
                             {filteredOrders.map(order => {
-                                const config = statusConfig[order.status]
+                                const config = statusConfig[order.status as OrderStatus]
 
                                 return (
                                     <div
@@ -160,7 +172,7 @@ export function OrdersManager() {
 
                                         <div className="flex items-center gap-4">
                                             <div className="text-right">
-                                                <p className="font-semibold">₱{order.items_total}</p>
+                                                <p className="font-semibold">₱{(order.items_total + (order.items_total * 0.12)).toFixed(2)}</p>
                                                 <p className="text-xs text-muted-foreground">
                                                     {order.created_at_human}
                                                 </p>
@@ -176,7 +188,11 @@ export function OrdersManager() {
                                                 variant="outline"
                                                 onClick={() => {
                                                     setSelectedOrder(order)
-                                                    setIsDialogOpen(true)
+                                                    if (pathname.includes('/admin')) {
+                                                        setIsDialogOpen(true)
+                                                    } else {
+                                                        router.push(`/checkout/status?orderId=${order.order_id}`)
+                                                    }
                                                 }}
                                             >
                                                 View
@@ -200,6 +216,8 @@ export function OrdersManager() {
                 onStatusChange={handleStatusChange}
                 onSaveNotes={handleSaveNotes}
                 onRiderAssign={handleRiderAssign}
+                setSelectedOrder={setSelectedOrder}
+                setOrders={setOrders}
             />
         </div>
     )

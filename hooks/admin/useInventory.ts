@@ -18,9 +18,9 @@ export interface InventoryItem {
 }
 
 export function useInventory() {
-    const getApi = useApi<{ data: InventoryItem[] }>("/admin/inventory", "GET")
-    const postApi = useApi("/admin/inventory", "POST")
-    const putApi = useApi("/admin/inventory", "PUT")
+    const getApi = useApi<{ data: InventoryItem[] }>("/admin/inventory")
+    const postApi = useApi("/admin/inventory")
+    const putApi = useApi("/admin/inventory")
     const { toast } = useToast()
 
     const { inventory, setInventory, addInventory, updateInventory } = useStore()
@@ -55,7 +55,7 @@ export function useInventory() {
         async (itemIds: number[]) => {
             if (!itemIds.length) return
             try {
-                await postApi.callApi({ body: { items: itemIds } })
+                await postApi.callApi({ body: { items: itemIds }, method: "POST" })
                 toast({
                     title: "Reorder placed",
                     description: `${itemIds.length} item(s) reordered successfully`,
@@ -119,6 +119,7 @@ export function useInventory() {
                 await putApi.callApi({
                     body: updatedItem,
                     urlOverride: `/admin/inventory/${id}`,
+                    'method': 'PUT',
                 })
 
                 // Update Zustand store immediately

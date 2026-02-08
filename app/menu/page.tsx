@@ -43,7 +43,7 @@ export default function MenuPage() {
               <MenuSection
                 key={key}
                 title={items[0]?.category || key}
-                description={categoryDescriptions[key] || `Delicious ${items[0]?.category || key}`}
+                description={items[0]?.description ?? `Delicious ${items[0]?.category || key}`}
                 items={items}
               />
             ))}

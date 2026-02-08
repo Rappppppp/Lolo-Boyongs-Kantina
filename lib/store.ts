@@ -1,3 +1,4 @@
+import { Reservation } from "@/app/types/reservations"
 import { create } from "zustand"
 
 interface CartItem {
@@ -42,6 +43,12 @@ export interface InventoryItem {
   status: Status
 }
 
+interface ReservationState {
+  reservations: Reservation[];
+  setReservations: (res: Reservation[] | ((prev: Reservation[]) => Reservation[])) => void;
+  addReservation: (res: Reservation) => void;
+}
+
 interface Store {
   // Auth
   user: User | null
@@ -81,6 +88,7 @@ interface Store {
   flushFilepond: () => void
 }
 
+
 export const useStore = create<Store>((set, get) => ({
   // User
   user: null,
@@ -95,11 +103,24 @@ export const useStore = create<Store>((set, get) => ({
   addToCart: (item) =>
     set((state) => {
       const existing = state.cartItems.find((i) => i.id === item.id)
+
+      // Item already in cart
       if (existing) {
+        // hard stop at 20
+        if (existing.quantity >= 20) {
+          return state
+        }
+
         return {
-          cartItems: state.cartItems.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)),
+          cartItems: state.cartItems.map((i) =>
+            i.id === item.id
+              ? { ...i, quantity: i.quantity + 1 }
+              : i
+          ),
         }
       }
+
+      // New item
       return {
         cartItems: [...state.cartItems, { ...item, quantity: 1 }],
       }
@@ -191,3 +212,11 @@ export const useSessionStore = create<SessionState>((set) => ({
   },
   clearTTL: () => set({ ttl: null }),
 }))
+
+export const useReservationStore = create<ReservationState>((set) => ({
+  reservations: [],
+  setReservations: (res) =>
+    set((state) => ({ reservations: typeof res === "function" ? res(state.reservations) : res })),
+  addReservation: (res) =>
+    set((state) => ({ reservations: [res, ...state.reservations] })),
+}));

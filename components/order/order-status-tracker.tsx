@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from "react"
-import { Clock, ChefHat, Package, Truck, MapPin, CheckCircle2 } from "lucide-react"
+import { Clock, ChefHat, Package, Truck, MapPin, CheckCircle2, X } from "lucide-react"
 import { Order } from "@/app/types/order"
 
 interface StatusStep {
@@ -27,6 +27,10 @@ export default function OrderStatusTracker({ order, refreshCount }: OrderStatusT
     { id: "otw", label: "On the Way", description: "Driver is coming", icon: <Truck /> },
     { id: "delivered", label: "Delivered", description: "Order complete", icon: <CheckCircle2 /> },
   ]
+
+  if (order.status === "cancelled") {
+    steps.splice(2, 0, { id: "cancelled", label: "Cancelled", description: "Order cancelled", icon: <X /> })
+  }
 
   const [prevIndex, setPrevIndex] = useState(0);
   const currentIndex = Math.max(steps.findIndex(s => s.id === order.status), 0);

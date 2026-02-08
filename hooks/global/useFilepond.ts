@@ -3,7 +3,7 @@
 import { useApi } from "@/hooks/use-api";
 
 export function useFilepond() {
-  const { data, loading, error, callApi } = useApi<any>("/filepond", "POST");
+  const { data, loading, error, callApi } = useApi<any>("/filepond");
 
   const fileUpload = async (files: File | File[]): Promise<any> => {
     const formData = new FormData();
@@ -13,6 +13,7 @@ export function useFilepond() {
 
     // Pass the FormData directly — do NOT wrap inside a JSON object
     return await callApi({
+      method: "POST",
       body: formData,
       isFormData: true, // make sure useApi does not stringify or override headers
     });

@@ -9,6 +9,8 @@ import { useSearchParams } from 'next/navigation';
 import { useGetOrderStatus } from '@/hooks/client/useGetOrderStatus';
 
 import { Order } from '@/app/types/order';
+import { Button } from '@/components/ui/button';
+import CancelOrderDialog from '@/components/order/client-cancel-order';
 
 export default function OrderStatusPage() {
     const searchParams = useSearchParams();
@@ -19,6 +21,7 @@ export default function OrderStatusPage() {
     const [refreshCount, setRefreshCount] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
     if (!orderId) {
         return (
@@ -91,8 +94,12 @@ export default function OrderStatusPage() {
     }
 
     return (
+        <>
+        <CancelOrderDialog selectedOrder={order} isCancelDialogOpen={cancelDialogOpen} setIsCancelDialogOpen={setCancelDialogOpen} setSelectedOrder={setOrder} />
+
         <div className="min-h-screen bg-gradient-to-br from-white to-orange-50">
             <div className="container mx-auto px-4 py-8">
+                <div>{order.status === 'pending' && <Button onClick={() => setCancelDialogOpen(true)} variant='destructive' className='mb-4' size='lg'>Cancel Order</Button>}</div>
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
@@ -120,5 +127,6 @@ export default function OrderStatusPage() {
                 </div>
             </div>
         </div>
+        </>
     );
 }

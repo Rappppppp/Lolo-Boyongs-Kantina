@@ -77,11 +77,51 @@ export const userSchema = z.object({
     street_address: z.string(),
     barangay: z.string(),
     password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .optional()
-    .or(z.literal("")), // allow empty string for optional password
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .optional()
+        .or(z.literal("")), // allow empty string for optional password
 })
+
+export const reservationSchema = z.object({
+    date: z
+        .string()
+        .min(1, "Date is required")
+        .refine((val) => {
+            const selected = new Date(val)
+            const today = new Date()
+            today.setHours(0, 0, 0, 0)
+            return selected >= today
+        }, "Date cannot be in the past"),
+
+    time: z
+        .string()
+        .min(1, "Time is required")
+        .refine((val) => {
+            const [hours, minutes] = val.split(":").map(Number)
+            const totalMinutes = hours * 60 + minutes
+
+            const open = 10 * 60 // 10:00 AM
+            const close = 20 * 60 // 8:00 PM
+
+            return totalMinutes >= open && totalMinutes <= close
+        }, "Time must be between 10:00 AM and 8:00 PM"),
+
+    guests: z
+        .string()
+        .min(1)
+        .transform((val) => Number(val))
+        .refine((val) => !isNaN(val), "Guests must be a number")
+        .refine((val) => val >= 1, "At least 1 guest required")
+        .refine((val) => val <= 20, "Maximum of 20 guests"),
+
+    notes: z
+        .string()
+        .max(1000)
+        .trim()
+        .optional()
+})
+
 
 // export const addCategorySchema = z.object({
 //     name: z.string().min(3, "Name is required"),

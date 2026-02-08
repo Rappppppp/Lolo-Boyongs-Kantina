@@ -63,7 +63,7 @@ export default function MenuSection({ title, description, items = [], loading, e
           : items.map((item) => (
             <div key={item.id} className="menu-card group">
               {/* Image Carousel */}
-              <div className="menu-card-image">
+              <div >
                 <ImageCarousel images={item.images?.filter(i => i.path).map(i => i.path) || []} />
               </div>
 
@@ -75,7 +75,7 @@ export default function MenuSection({ title, description, items = [], loading, e
                 <h4 className="menu-card-title group-hover:text-primary transition-colors">{item.name}</h4>
                 <p className="menu-card-description">{item.description}</p>
 
-                {item.rating && <div className="menu-card-rating">
+                {item.rating && <div className="menu-card-rating shadow-xl border">
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -89,8 +89,8 @@ export default function MenuSection({ title, description, items = [], loading, e
                 </div>}
 
                 {/* Footer with price and action */}
-                <div className="menu-card-footer">
-                  <span className="price-tag">₱{item.price}</span>
+                <div className="menu-card-footer flex items-center justify-between gap-2 text-sm text-muted-foreground">
+                  <h2 className="price-tag text-primary text-3xl font-bold">₱{item.price}</h2>
 
                   {user ? (
                     <Button
@@ -98,7 +98,7 @@ export default function MenuSection({ title, description, items = [], loading, e
                         addToCart(item)
                         toast.success(`${item.name} added to cart`, { position: "bottom-left" })
                       }}
-                      className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground font-semibold rounded-full px-4 py-2 shadow-lg transition-all duration-300 hover:shadow-xl"
+                      className="bg-gradient-to-r from-primary to-accent font-semibold rounded-full px-4 py-2 shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer"
                     >
                       <Plus className="w-4 h-4 mr-1" />
                       Add
