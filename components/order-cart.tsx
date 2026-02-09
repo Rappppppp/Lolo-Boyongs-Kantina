@@ -125,12 +125,12 @@ export default function OrderCart({ isOpen, onClose }: OrderCartProps) {
                 <span className="font-medium">₱ {subtotal.toFixed(2)}</span>
               </div>
 
-              <div className="flex justify-between text-sm">
+              {/* <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Tax (12%)</span>
                 <span className="font-medium">
                   ₱ {(total - subtotal).toFixed(2)}
                 </span>
-              </div>
+              </div> */}
 
               <div className="flex justify-between text-base font-bold border-t border-border pt-3">
                 <span>Total</span>
