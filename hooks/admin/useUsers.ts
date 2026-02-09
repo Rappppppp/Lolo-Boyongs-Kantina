@@ -6,6 +6,10 @@ import { User } from "@/app/types/user"
 
 export type UserRole = "admin" | "rider" | "user"
 
+interface ApiResponse<T> {
+    data: T
+}
+
 export function useUsers() {
     const api = useApi<{ data: User[]; meta: { current_page: number; last_page: number } }>("/admin/users");
 
@@ -29,8 +33,8 @@ export function useUsers() {
      * CREATE
      */
     const createUser = useCallback(
-        async (payload: Partial<User> & { password: string }) => {
-            const res = await api.callApi({
+        async (payload: Partial<User> & { password?: string }): Promise<User> => {
+            const res = await api.callApi<ApiResponse<User>>({
                 method: "POST",
                 urlOverride: "/admin/users",
                 body: payload,
@@ -45,14 +49,14 @@ export function useUsers() {
      * UPDATE
      */
     const updateUser = useCallback(
-        async (id: number, payload: Partial<User>) => {
-            const res = await api.callApi({
+        async (id: number, payload: Partial<User>): Promise<User> => {
+            const res = await api.callApi<ApiResponse<User>>({
                 method: "PUT",
                 urlOverride: `/admin/users/${id}`,
                 body: payload,
             })
 
-            return res.data
+            return res.data; 
         },
         [api]
     )

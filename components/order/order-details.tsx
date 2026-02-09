@@ -15,7 +15,7 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
   // Calculate totals from API data
   const subtotal = order.items_total
   // const delivery = 2.0; // or fetch from API if dynamic
-  const tax =  (subtotal * 1.12) - subtotal // 12% tax//
+  // const tax =  (subtotal * 1.12) - subtotal // 12% tax//
   const total = subtotal * 1.12 // + delivery;
 
   return (
@@ -88,10 +88,10 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
           <span>Subtotal</span>
           <span>₱{subtotal?.toFixed(2)}</span>
         </div>
-         <div className="flex justify-between text-sm text-muted-foreground">
+         {/* <div className="flex justify-between text-sm text-muted-foreground">
           <span>Tax (12% vat)</span>
           <span>₱{tax.toFixed(2)}</span>
-        </div>
+        </div> */}
         {/* <div className="flex justify-between text-sm text-muted-foreground">
           <span>Delivery Fee</span>
           <span className="text-green-600">+${delivery.toFixed(2)}</span>
