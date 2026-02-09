@@ -297,9 +297,9 @@ export function AddMenuDialog({
               {/* Image Previews */}
               {uploadedFiles.length > 0 && (
                 <div className="grid grid-cols-3 gap-3">
-                  {uploadedFiles.map((file) => (
+                  {uploadedFiles.map((file, i) => (
                     <div
-                      key={file.blob}
+                      key={i}
                       className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-muted"
                     >
                       <img
@@ -320,25 +320,27 @@ export function AddMenuDialog({
               )}
 
               {/* Upload Button */}
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload(Array.from(e.target.files ?? []).slice(0, 5))}
-                  className="hidden"
-                  id="file-upload"
-                  disabled={isUploading || uploadedFiles.length >= 5}
-                />
-                <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-2">
+              {type === 'Add' &&
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(Array.from(e.target.files ?? []).slice(0, 5))}
+                    className="hidden"
+                    id="file-upload"
+                    disabled={isUploading || uploadedFiles.length >= 5}
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-2">
 
-                  {isUploading ? <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /> : <Upload className="w-8 h-8 text-muted-foreground" />}
-                  <div>
-                    <p className="text-sm font-medium">{isUploading ? "Uploading..." : "Click to upload images"}</p>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB (Max 5 images)</p>
-                  </div>
-                </label>
-              </div>
+                    {isUploading ? <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /> : <Upload className="w-8 h-8 text-muted-foreground" />}
+                    <div>
+                      <p className="text-sm font-medium">{isUploading ? "Uploading..." : "Click to upload images"}</p>
+                      <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB (Max 5 images)</p>
+                    </div>
+                  </label>
+                </div>
+              }
 
             </div>
           </div>

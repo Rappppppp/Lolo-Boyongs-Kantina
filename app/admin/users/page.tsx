@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Plus, Edit2, Trash2 } from "lucide-react"
+import { Plus, Edit2, Trash2, Loader2 } from "lucide-react"
 import debounce from 'debounce';
 import { z } from "zod"
 
@@ -109,11 +109,11 @@ export default function UsersTablePage() {
         try {
             const parsed = userSchema.parse(form);
             if (editingUser) {
-                const updatedUser = await updateUser(editingUser.id, parsed);
+                const updatedUser: User = await updateUser(editingUser.id, parsed);
                 setUsers(prev => prev.map(u => (u.id === updatedUser.id ? updatedUser : u)));
                 toast({ title: "User updated" });
             } else {
-                const newUser = await createUser(parsed);
+                const newUser: User = await createUser(parsed);
                 setUsers(prev => [newUser, ...prev]);
                 toast({ title: "User created" });
             }
@@ -269,6 +269,7 @@ export default function UsersTablePage() {
                         <div>
                             <Label>Email</Label>
                             <Input
+                                type="email"
                                 placeholder="Email"
                                 value={form.email}
                                 onChange={e => setForm({ ...form, email: e.target.value })}
@@ -349,7 +350,7 @@ export default function UsersTablePage() {
                     </div>
 
                     <DialogFooter>
-                        <Button onClick={handleSubmit}>{editingUser ? "Update" : "Create"}</Button>
+                        <Button onClick={handleSubmit} disabled={loading}>{loading ? <Loader2 className="w-4 h-4 animate-spin" /> : editingUser ? "Update" : "Create"}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

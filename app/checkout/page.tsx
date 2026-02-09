@@ -230,7 +230,6 @@ export default function CheckoutPage() {
                     <span className="text-muted-foreground">Tax</span>
                     <span className="font-medium">₱{(total - subtotal).toFixed(2)}</span>
                   </div> */}
-
                 </div>
 
                 <div className="border-t border-border pt-4 flex justify-between">

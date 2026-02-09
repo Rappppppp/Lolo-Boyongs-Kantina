@@ -6,14 +6,17 @@ import Cookies from "js-cookie";
 
 export function useLogout() {
   // Prepare API caller — adjust to your actual logout endpoint
-  const { loading, error, callApi } = useApi("/logout", "POST");
+  const { loading, error, callApi } = useApi("/logout");
 
   const { setUser } = useStore();
 
   const logout = async () => {
     try {
       // Try to notify backend (optional, depending on your Laravel config)
-      await callApi();
+      await callApi({
+        method: "POST",
+        body: JSON.stringify({ logout: true }),
+      });
 
     } catch (e) {
       // Don't block logout on API failure — still continue clearing session
