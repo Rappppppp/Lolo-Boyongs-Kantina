@@ -98,7 +98,7 @@ export default function AdminLayout({
         <header className="bg-gradient-to-br from-primary to-orange-400 text-white border-b border-border px-8 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Restaurant Admin</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm">Logged in as <b>{user?.firstName}</b></span>
+            <span className="text-sm">Logged in as <b>{user?.first_name}</b></span>
           </div>
         </header>
 
