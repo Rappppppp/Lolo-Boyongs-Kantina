@@ -12,19 +12,20 @@ import { OrderDetailsDialog } from "@/components/order/order-details-dialog"
 import { useOrders } from "@/hooks/admin/useOrders"
 import { useUsers } from "@/hooks/admin/useUsers"
 import { usePathname, useRouter } from "next/navigation"
+import { useStore } from "@/lib/store"
 
 type OrderStatus = "pending" | "confirmed" | "otw" | "delivered" | "cancelled"
 
 const statusConfig: Record<OrderStatus, {
-  label: string
-  icon: React.ForwardRefExoticComponent<any>
-  color: string
+    label: string
+    icon: React.ForwardRefExoticComponent<any>
+    color: string
 }> = {
-  pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
-  confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
-  otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
-  delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
-  cancelled: { label: "Cancelled", icon: X, color: "bg-red-100 text-red-800" },
+    pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
+    confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
+    otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
+    delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
+    cancelled: { label: "Cancelled", icon: X, color: "bg-red-100 text-red-800" },
 }
 
 
@@ -43,7 +44,9 @@ export function OrdersManager() {
     const [selectedRider, setSelectedRider] = useState<User | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-      const pathname = usePathname();
+    const { user } = useStore();
+
+    const pathname = usePathname();
     const router = useRouter();
 
     const { fetchOrders, updateOrderStatus, loading } = useOrders()
@@ -51,7 +54,10 @@ export function OrdersManager() {
 
     useEffect(() => {
         fetchOrders().then(setOrders)
-        fetchUsers({ role: "rider" }).then(res => setRiders(res.data))
+        
+        if (user?.role === 'admin') {
+            fetchUsers({ role: "rider" }).then(res => setRiders(res.data))
+        }
     }, [])
 
     const orderCounts = useMemo(() => ({

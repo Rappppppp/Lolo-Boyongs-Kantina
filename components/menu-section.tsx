@@ -18,18 +18,19 @@ interface MenuImage {
 interface MenuItem {
   id: number
   name: string
-  description: string
+  description?: string
   price: number
   rating: number
   images?: MenuImage[]
   badge?: string
+  quantity: number,
   reviewCount?: number
 }
 
 interface MenuSectionProps {
   title: string
   description: string
-  items?: MenuItem[]// make optional for loading
+  items: MenuItem[]// make optional for loading
   loading?: boolean
   error?: string
 

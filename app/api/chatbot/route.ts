@@ -1,3 +1,5 @@
+'use server';
+
 // app/api/chatbot/route.ts
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";

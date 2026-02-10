@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function OrdersPage() {
     // very important
-    const [isReady, setIsReady] = useState(false);
+    // const [isReady, setIsReady] = useState(false);
 
     const { user } = useStore();
     const router = useRouter();
@@ -15,10 +15,9 @@ export default function OrdersPage() {
     useEffect(() => {
         if (!user) {
             router.push(`/login?redirect=/orders`);
-            return;
         }
 
-        setIsReady(true);
+        // setIsReady(true);
     }, [user, router]);
 
     return <div className="p-12">

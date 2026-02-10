@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+// import { useState } from "react"
 import { useMenuItems } from "@/hooks/client/useMenuItems"
 import MenuSection from "@/components/menu-section"
 
 export default function MenuPage() {
-  const [cartOpen, setCartOpen] = useState(false)
+  // const [cartOpen, setCartOpen] = useState(false)
   const { menuItems, loading, error } = useMenuItems()
 
   // Group menu items by category
