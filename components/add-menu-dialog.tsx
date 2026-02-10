@@ -22,8 +22,9 @@ import { useApi } from "@/hooks/use-api"
 import { useStore } from "@/lib/store"
 import { useCategories } from "@/hooks/admin/useCategories"
 import { useFilepond } from "@/hooks/global/useFilepond"
-import { X, Upload, ImageIcon, Star, TagIcon, Loader2 } from "lucide-react"
+import { X, Upload, ImageIcon, Star, TagIcon, Loader2, Loader } from "lucide-react"
 import { useToast } from "./ui/use-toast"
+import { toast } from "sonner"
 
 interface AddMenuDialogProps {
   open: boolean
@@ -65,8 +66,6 @@ export function AddMenuDialog({
   const [uploadedFiles, setUploadedFiles] = useState<FilepondUpload[]>([])
   const [isUploading, setIsUploading] = useState(false)
 
-  const { toast } = useToast();
-
   const { callApi, loading } = useApi("/admin/menu-item")
   const { refresh } = useCategories()
   const { fileUpload } = useFilepond()
@@ -81,7 +80,7 @@ export function AddMenuDialog({
   }, [categories])
 
   useEffect(() => {
-    console.log(item)
+    // console.log(item)
 
     if (!item) {
       resetForm();
@@ -100,18 +99,15 @@ export function AddMenuDialog({
   const handleFileUpload = async (files: File[]) => {
     if (!files.length) return
 
-    if (files.length > 5) return toast({
-      title: "Failed to upload images",
-      description: "You can only upload up to 5 images at a time",
-      variant: "destructive",
-    })
+    if (files.length > 5) return toast.error('You can only upload up to 5 images at a time');
 
     setIsUploading(true)
+
     try {
       const result = await fileUpload(files)
 
       if (!result?.files || !Array.isArray(result.files)) {
-        console.error("[v0] No files in response:", result)
+        console.error("No files in response:", result)
         return
       }
 
@@ -123,7 +119,7 @@ export function AddMenuDialog({
       const blobs = newUploads.map((upload) => upload.blob)
       setFilepondFiles([...filepondFiles, ...blobs])
     } catch (err) {
-      console.error("[v0] Failed to upload files:", err)
+      console.error("Failed to upload files:", err)
     } finally {
       setIsUploading(false)
     }
@@ -134,24 +130,24 @@ export function AddMenuDialog({
     setFilepondFiles(filepondFiles.filter((b) => b !== blob))
   }
 
-  const addTag = () => {
-    const trimmed = tagInput.trim()
-    if (trimmed && !tags.includes(trimmed)) {
-      setTags([...tags, trimmed])
-      setTagInput("")
-    }
-  }
+  // const addTag = () => {
+  //   const trimmed = tagInput.trim()
+  //   if (trimmed && !tags.includes(trimmed)) {
+  //     setTags([...tags, trimmed])
+  //     setTagInput("")
+  //   }
+  // }
 
-  const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag))
-  }
+  // const removeTag = (tag: string) => {
+  //   setTags(tags.filter((t) => t !== tag))
+  // }
 
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      addTag()
-    }
-  }
+  // const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault()
+  //     addTag()
+  //   }
+  // }
 
   const resetForm = () => {
     setName("")
@@ -186,6 +182,7 @@ export function AddMenuDialog({
       resetForm()
       setOpen(false)
       onSuccess()
+      toast.success("Menu item created successfully")
     } catch (err) {
       console.error("Failed to add menu item:", err)
     }
@@ -358,6 +355,7 @@ export function AddMenuDialog({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading || !isFormValid}>
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {loading ?
               `${type == 'Edit' ?
                 'Editing' :

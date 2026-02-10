@@ -38,7 +38,6 @@ export interface CreateMenuItemPayload {
 export function useMenuItems() {
   const { data, loading, error, callApi } = useApi<PaginatedResponse<MenuItem>>(
     "/admin/menu-item",
-    "GET"
   );
 
   const fetchMenuItems = async () => {
@@ -74,6 +73,10 @@ export function useMenuItems() {
     return await callApi({ body, isFormData });
   };
 
+  const deleteMenuItem = async (menuItemId: number) => {
+    return await callApi({ method: "DELETE", urlOverride: `/admin/menu-item/${menuItemId}` });
+  };
+
   useEffect(() => {
     fetchMenuItems();
   }, []);
@@ -86,5 +89,6 @@ export function useMenuItems() {
     error,
     refetch: fetchMenuItems,
     createMenuItem,
+    deleteMenuItem
   };
 }
