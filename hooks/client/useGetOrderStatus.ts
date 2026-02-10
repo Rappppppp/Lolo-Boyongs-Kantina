@@ -1,24 +1,31 @@
+'use client';
+
 import { useApi } from "@/hooks/use-api";
-// import { useStore } from "@/lib/store";
+import type { Order } from "@/app/types/order";
+
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  success?: boolean;
+}
 
 export const useGetOrderStatus = () => {
-    const { data, loading, error, callApi } = useApi("/ordering");
+  const { data, loading, error, callApi } = useApi("/ordering");
 
-    const getOrderStatus = async (orderId: string) => {
+  const getOrderStatus = async (
+    orderId: string
+  ): Promise<ApiResponse<Order>> => {
+    const response = await callApi<ApiResponse<Order>>({
+      urlOverride: `/ordering/${orderId}`,
+    });
 
-        const response = await callApi({
-            urlOverride: `/ordering/${orderId}`
-        })
+    return response;
+  };
 
-        // console.log("Order Status Response:", response);
-
-        return response
-    }
-
-    return {
-        getOrderStatus,
-        data,
-        loading,
-        error
-    };
-}
+  return {
+    getOrderStatus,
+    data,
+    loading,
+    error,
+  };
+};

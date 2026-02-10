@@ -14,10 +14,12 @@ export interface MenuItem {
   id: number;
   category: string;
   name: string;
-  price: string;
+  price: number;
   price_raw: number;
   images: MenuImage[];
   description?: string;
+  rating: number;
+  quantity: number;
 }
 
 export interface PaginatedResponse<T> {
