@@ -66,6 +66,7 @@ export function OrdersManager() {
         confirmed: orders.filter(o => o.status === "confirmed").length,
         otw: orders.filter(o => o.status === "otw").length,
         delivered: orders.filter(o => o.status === "delivered").length,
+        cancelled: orders.filter(o => o.status === "cancelled").length,
     }), [orders])
 
     const filteredOrders = useMemo(() => {
