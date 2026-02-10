@@ -1,4 +1,5 @@
 import { Reservation } from "@/app/types/reservations"
+import { User } from "@/app/types/user"
 import { create } from "zustand"
 
 interface CartItem {
@@ -8,17 +9,6 @@ interface CartItem {
   price: number
   rating: number
   quantity: number
-}
-
-interface User {
-  id: string
-  email: string
-  role: "user" | "rider" | "admin"
-  firstName: string
-  lastName: string
-  phoneNumber: string
-  streetAddress: string
-  barangay: string
 }
 
 interface VerificationState {

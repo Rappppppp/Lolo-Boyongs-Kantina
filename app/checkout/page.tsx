@@ -53,11 +53,11 @@ export default function CheckoutPage() {
   const [order, setOrder] = useState<Order | null>(null)
 
   // Form Fields
-  const [fullName, setFullName] = useState(`${user?.firstName ?? ""} ${user?.lastName ?? ""}`)
+  const [fullName, setFullName] = useState(`${user?.first_name ?? ""} ${user?.last_name ?? ""}`)
   const [email, setEmail] = useState(user?.email ?? "")
-  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber ?? "")
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone_number ?? "")
   const [address, setAddress] = useState(
-    `${user?.streetAddress ?? ""}, ${user?.barangay ?? ""}`
+    `${user?.street_address ?? ""}, ${user?.barangay ?? ""}`
   )
   const [notes, setNotes] = useState("")
   const [gcashRef, setGcashRef] = useState("")
@@ -99,11 +99,12 @@ export default function CheckoutPage() {
     }
   }
 
-  if (completed && order) {
-    sessionStorage.setItem(`orderId=${order.order_id}`, JSON.stringify(order));
-
-    return router.push(`/checkout/status?orderId=${order.order_id}`)
-  }
+  useEffect(() => {
+    if (completed && order) {
+      sessionStorage.setItem(`orderId=${order.order_id}`, JSON.stringify(order));
+      router.push(`/checkout/status?orderId=${order.order_id}`);
+    }
+  }, [completed, order, router]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -124,7 +125,7 @@ export default function CheckoutPage() {
 
                   <Label className="mb-1">Receipient Name <span className="text-red-500">*</span></Label>
                   <Input
-                    defaultValue={`${user?.firstName} ${user?.lastName}`}
+                    defaultValue={`${user?.first_name} ${user?.last_name}`}
                     placeholder="Full Name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -142,7 +143,7 @@ export default function CheckoutPage() {
 
                   <Label className="mb-1">Phone Number <span className="text-red-500">*</span></Label>
                   <Input
-                    defaultValue={user?.phoneNumber}
+                    defaultValue={user?.phone_number}
                     placeholder="Phone Number" type="tel"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
@@ -151,7 +152,7 @@ export default function CheckoutPage() {
 
                   <Label className="mb-1">Delivery Address <span className="text-red-500">*</span></Label>
                   <Input
-                    defaultValue={`${user?.streetAddress}, ${user?.barangay}`}
+                    defaultValue={`${user?.street_address}, ${user?.barangay}`}
                     placeholder="Delivery Address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}

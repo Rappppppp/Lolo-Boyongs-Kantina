@@ -1,57 +1,58 @@
 // hooks/useLogin.ts
 "use client";
 
+import { User } from "@/app/types/user";
 import { useApi } from "@/hooks/use-api";
 import { useStore } from "@/lib/store";
 import Cookies from "js-cookie";
 
 export function useLogin() {
   const { data, loading, error, callApi } = useApi("/login");
-
   const { setUser } = useStore();
 
-  const login = async (email: string, password: string) => {
-    const response = await callApi({
+  const login = async (email: string, password: string): Promise<User> => {
+    const response = await callApi<{ user: any; token: string }>({
       method: "POST",
-      body: { email, password }
+      body: { email, password },
     });
 
-    // Save token to cookies (Laravel passport / sanctum usually returns token)
-    if (response?.token && response?.user) {
-      const { id, first_name, last_name, email, phone_number, street_address, barangay, role } = response.user;
-
-      const userData = {
-        id,
-        firstName: first_name,
-        lastName: last_name,
-        email,
-        role,
-        phoneNumber: phone_number,
-        streetAddress: street_address,
-        barangay,
-      }
-
-      setUser(userData);
-
-      Cookies.set("token", response.token, {
-        expires: 7,
-        secure: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? true : false,          // HTTPS required
-        sameSite: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? "none" : "lax",      // allows cross-site usage
-      });
-
-      Cookies.set("user", JSON.stringify(userData), {
-        expires: 7,
-        secure: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? true : false,          // HTTPS required
-        sameSite: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? "none" : "lax",      // allows cross-site usage
-      });
-
+    if (!response?.user || !response?.token) {
+      throw new Error("Invalid login response");
     }
 
-    return response;
+    const { id, first_name, last_name, email: userEmail, phone_number, street_address, barangay, role } = response.user;
+
+    const userData: User = {
+      id,
+      first_name,
+      last_name,
+      email,
+      role,
+      phone_number,
+      street_address,
+      barangay,
+    };
+
+    setUser(userData);
+
+    // Set cookies
+    Cookies.set("token", response.token, {
+      expires: 7,
+      secure: process.env.NEXT_PUBLIC_APP_ENV === "production",
+      sameSite: process.env.NEXT_PUBLIC_APP_ENV === "production" ? "none" : "lax",
+    });
+
+    Cookies.set("user", JSON.stringify(userData), {
+      expires: 7,
+      secure: process.env.NEXT_PUBLIC_APP_ENV === "production",
+      sameSite: process.env.NEXT_PUBLIC_APP_ENV === "production" ? "none" : "lax",
+    });
+
+    return userData; // ✅ return proper User
   };
 
   return {
-    user: data,
+    user: data as User | null,
     loading,
     error,
     login,

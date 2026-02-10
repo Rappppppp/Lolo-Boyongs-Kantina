@@ -224,7 +224,7 @@ export default function Navigation({ onCartClick }: NavigationProps) {
             {user ? (
               <Menu as="div" className="relative">
                 <Menu.Button className="flex items-center gap-2 px-3 py-2">
-                  <span className="font-medium">{user.firstName}</span>
+                  <span className="font-medium">{user.first_name}</span>
                   <ChevronDown className="w-4 h-4" />
                 </Menu.Button>
 
@@ -239,7 +239,7 @@ export default function Navigation({ onCartClick }: NavigationProps) {
                 >
                   <Menu.Items className="absolute right-0 mt-2 w-56 rounded-xl bg-white text-gray-800 shadow-lg focus:outline-none overflow-hidden">
                     <div className="px-4 py-3 border-b">
-                      <p className="text-sm font-medium">{user.firstName}</p>
+                      <p className="text-sm font-medium">{user.first_name}</p>
                       <p className="text-xs text-gray-500 truncate">
                         {user.email}
                       </p>

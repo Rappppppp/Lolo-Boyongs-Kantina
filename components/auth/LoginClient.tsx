@@ -9,44 +9,48 @@ import { Mail, Lock, EyeOff, Eye, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { loginSchema } from "@/lib/schemas"
 import { useLogin } from "@/hooks/auth/useLogin"
-
 import { useStore } from "@/lib/store"
 import Cookies from 'js-cookie'
+import { User } from "@/app/types/user"
 
 export default function LoginClient() {
   const { loading, login } = useLogin();
-
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-
-  const router = useRouter()
+  const { user, setUser } = useStore(); // assuming your store exposes setUser
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
 
-  // check if user is logged in
-  const { user } = useStore();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
+  // Redirect if already logged in
   useEffect(() => {
-    if (
-      Cookies.get('user') || 
-      Cookies.get('token') ||
-      !!user
-    ) {
-      router.push('/')
-    }
+    const storedUser = Cookies.get('user') ? JSON.parse(Cookies.get('user')!) : null;
 
-  }, [])
+    if (storedUser) {
+      if (storedUser.role === 'admin') {
+        router.replace('/admin');
+      } else {
+        router.replace('/');
+      }
+    } else if (user) {
+      // fallback if Zustand store has user
+      if (user.role === 'admin') {
+        router.replace('/admin');
+      } else {
+        router.replace('/');
+      }
+    }
+  }, [router, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setErrors({}); // reset errors
 
     // --- ZOD VALIDATION ---
     const result = loginSchema.safeParse({ email, password });
-
     if (!result.success) {
       const zodErrors: any = {};
       result.error.errors.forEach((err) => {
@@ -59,11 +63,15 @@ export default function LoginClient() {
 
     // --- API REQUEST ---
     try {
-      await login(email, password);
-      router.push(redirect || "/");
-    } catch (err: any) {
+      const loggedInUser: User = await login(email, password); // make sure login returns the user object
+      setUser(loggedInUser); // update Zustand store if needed
 
-      // --- Laravel validation errors ---
+      if (loggedInUser.role === 'admin') {
+        router.replace('/admin');
+      } else {
+        router.replace(redirect || '/');
+      }
+    } catch (err: any) {
       if (err?.errors) {
         const formatted: Record<string, string> = {};
         for (const key in err.errors) {
@@ -72,8 +80,6 @@ export default function LoginClient() {
         setErrors(formatted);
         return;
       }
-
-      // --- "Invalid credentials" case ---
       if (err?.error === "Invalid credentials") {
         setErrors({
           email: "Invalid email or password",
@@ -81,8 +87,6 @@ export default function LoginClient() {
         });
         return;
       }
-
-      // --- Fallback unexpected error ---
       setErrors({
         email: err?.message || "Login failed",
         password: "",
@@ -103,6 +107,7 @@ export default function LoginClient() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <Mail className="w-4 h-4" />
@@ -112,29 +117,26 @@ export default function LoginClient() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary ${errors.email ? "border-destructive" : "border-border"
-                    }`}
+                  className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary ${errors.email ? "border-destructive" : "border-border"}`}
                   placeholder="example.lolo@boyongs.com"
                 />
                 {errors.email && <p className="text-destructive text-sm">{errors.email}</p>}
               </div>
 
+              {/* Password */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <Lock className="w-4 h-4" />
                   Password
                 </label>
-
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary ${errors.password ? "border-destructive" : "border-border"
-                      }`}
+                    className={`w-full px-4 py-2 border rounded-lg bg-input text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary ${errors.password ? "border-destructive" : "border-border"}`}
                     placeholder="••••••••"
                   />
-
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -143,14 +145,11 @@ export default function LoginClient() {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-
                 {errors.password && <p className="text-destructive text-sm">{errors.password}</p>}
               </div>
 
               <Button type="submit" className="w-full" size="lg">
-                {
-                  loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"
-                }
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
               </Button>
             </form>
 
