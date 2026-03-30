@@ -15,9 +15,10 @@ export function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
 
   // Rider trying to access home page (/) → redirect to /rider
-  if (user.role === "rider" && url.pathname === "/") {
-    url.pathname = "/rider";
-    return NextResponse.redirect(url);
+  if (user.role === "rider" && req.nextUrl.pathname === "/") {
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.pathname = "/rider";
+    return NextResponse.redirect(redirectUrl);
   }
 
   // User trying to access /rider → redirect to home (/)

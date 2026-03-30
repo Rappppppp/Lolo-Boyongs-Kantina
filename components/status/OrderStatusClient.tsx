@@ -12,7 +12,7 @@ import { Order } from '@/app/types/order';
 import { Button } from '@/components/ui/button';
 import CancelOrderDialog from '@/components/order/client-cancel-order';
 
-export default function OrderStatusClient() {
+function OrderStatusClientInner() {
     const searchParams = useSearchParams();
     const orderId = searchParams.get('orderId');
 
@@ -93,8 +93,9 @@ export default function OrderStatusClient() {
         return <div className="p-8 text-center text-gray-500">Loading order...</div>;
     }
 
+
     return (
-        <Suspense>
+        <>
             <CancelOrderDialog selectedOrder={order} isCancelDialogOpen={cancelDialogOpen} setIsCancelDialogOpen={setCancelDialogOpen} setSelectedOrder={setOrder} />
 
             <div className="min-h-screen bg-gradient-to-br from-white to-orange-50">
@@ -127,6 +128,14 @@ export default function OrderStatusClient() {
                     </div>
                 </div>
             </div>
+        </>
+    );
+}
+
+export default function OrderStatusClient() {
+    return (
+        <Suspense>
+            <OrderStatusClientInner />
         </Suspense>
     );
 }

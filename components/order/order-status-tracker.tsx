@@ -21,8 +21,8 @@ export default function OrderStatusTracker({ order, refreshCount }: OrderStatusT
 
   const steps: StatusStep[] = [
     { id: "pending", label: "Pending", description: "Waiting for confirmation", icon: <Clock /> },
-    { id: "filler1", label: "Confirmed", description: "Order received", icon: <Clock /> },
-    { id: "confirmed", label: "Preparing", description: "Being cooked", icon: <ChefHat /> },
+    // { id: "filler1", label: "Confirmed", description: "Order received", icon: <Clock /> },
+    { id: "confirmed", label: "Confirmed", description: "Being cooked", icon: <ChefHat /> },
     // { id: "ready_pickup", label: "Ready", description: "Waiting for rider", icon: <Package /> },
     { id: "otw", label: "On the Way", description: "Driver is coming", icon: <Truck /> },
     { id: "delivered", label: "Delivered", description: "Order complete", icon: <CheckCircle2 /> },

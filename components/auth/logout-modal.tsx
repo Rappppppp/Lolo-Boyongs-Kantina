@@ -25,15 +25,24 @@ export default function LogoutModal({ children }: LogoutModalProps) {
     setOpen(false); // close modal
     Cookies.remove('user');
     Cookies.remove('token');
-    router.push("/login");
+    await logout();
     toast({
       title: "You have been logged out",
       description: "You can now log in again",
       className: "bg-green-500 text-white border-green-600",
       duration: 3000, // 3 seconds
     });
-
-    await logout();
+    try {
+      router.replace("/login");
+      // Fallback in case router.replace does not work (e.g., outside React tree)
+      setTimeout(() => {
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
+      }, 300);
+    } catch (e) {
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -56,10 +65,7 @@ export default function LogoutModal({ children }: LogoutModalProps) {
           </Button>
           <Button
             variant="destructive"
-            onClick={async () => {
-              setOpen(false);
-              await handleLogout();
-            }}
+            onClick={handleLogout}
           >
             Logout
           </Button>

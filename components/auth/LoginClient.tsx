@@ -13,7 +13,8 @@ import { useStore } from "@/lib/store"
 import Cookies from 'js-cookie'
 import { User } from "@/app/types/user"
 
-export default function LoginClient() {
+
+function LoginClientInner() {
   const { loading, login } = useLogin();
   const { user, setUser } = useStore(); // assuming your store exposes setUser
   const router = useRouter();
@@ -169,4 +170,14 @@ export default function LoginClient() {
       </div>
     </div>
   )
+}
+
+import { Suspense } from "react";
+
+export default function LoginClient() {
+  return (
+    <Suspense>
+      <LoginClientInner />
+    </Suspense>
+  );
 }
