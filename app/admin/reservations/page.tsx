@@ -10,11 +10,14 @@ import { Reservation } from "@/app/types/reservations"
 import { useReservation } from "@/hooks/client/useReservation"
 import { Dialog, DialogTitle, DialogDescription, DialogContent, DialogFooter } from "@/components/ui/dialog"
 
-export const statusColors = {
+export const statusColors: Record<string, string> = {
   confirmed: "bg-green-100 text-green-800",
   pending: "bg-amber-100 text-amber-800",
   cancelled: "bg-red-100 text-red-800",
   completed: "bg-blue-100 text-blue-800",
+  no_show: "bg-gray-100 text-gray-700",
+  rescheduled: "bg-purple-100 text-purple-800",
+  default: "bg-muted text-muted-foreground",
 }
 
 export default function ReservationsAdminPage() {
@@ -34,6 +37,7 @@ export default function ReservationsAdminPage() {
 
   useEffect(() => {
     fetchReservations().then(setReservations)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleActionClick = (
@@ -110,7 +114,7 @@ export default function ReservationsAdminPage() {
 
                 <div className="flex items-center gap-4">
                   <Badge
-                    className={statusColors[r.status as keyof typeof statusColors]}
+                    className={statusColors[r.status] ?? statusColors.default}
                   >
                     {r.status}
                   </Badge>
@@ -129,7 +133,7 @@ export default function ReservationsAdminPage() {
                   {r.status !== "confirmed" && (
                     <Button
                       size="sm"
-                      variant="success"
+                      className="bg-green-600 hover:bg-green-700 text-white"
                       onClick={() => handleActionClick(r, "confirmed")}
                     >
                       Set as Confirmed
@@ -186,11 +190,14 @@ export default function ReservationsAdminPage() {
             </Button>
             <Button
               variant={
-                actionType === "confirmed"
-                  ? "success"
-                  : actionType === "cancelled"
+                actionType === "cancelled"
                   ? "destructive"
                   : "secondary"
+              }
+              className={
+                actionType === "confirmed"
+                  ? "bg-green-600 hover:bg-green-700 text-white"
+                  : undefined
               }
               size="sm"
               onClick={handleConfirmAction}

@@ -50,8 +50,16 @@ export function OrdersManager() {
     const { fetchUsers } = useUsers()
 
     useEffect(() => {
-        fetchOrders().then(setOrders)
-        fetchUsers({ role: "rider" }).then(res => setRiders(res.data))
+        Promise.all([
+            fetchOrders(),
+            fetchUsers({ role: "rider" }),
+        ])
+            .then(([ordersData, usersRes]) => {
+                setOrders(ordersData)
+                setRiders(usersRes.data)
+            })
+            .catch((err) => console.error("Failed to load orders/riders:", err))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const orderCounts = useMemo(() => ({

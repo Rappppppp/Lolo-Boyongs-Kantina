@@ -153,7 +153,8 @@ export function AddMenuDialog({
     }
   }
 
-  const resetForm = () => {
+  // declared as function so it is hoisted above the useEffect that calls it
+  function resetForm() {
     setName("")
     setDescription("")
     setCategoryId("")

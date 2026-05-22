@@ -31,7 +31,6 @@ export function useOrders() {
       const res = await listApi.callApi({
         method: "GET",
       })
-      console.log(res.data)
       return res.data
     } catch (err: any) {
       toast.error(err.message || "Failed to fetch order")

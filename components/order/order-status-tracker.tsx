@@ -13,10 +13,10 @@ interface StatusStep {
 
 interface OrderStatusTrackerProps {
   order: Order
-  refreshCount: number
+  refreshCount?: number
 }
 
-export default function OrderStatusTracker({ order, refreshCount }: OrderStatusTrackerProps) {
+export default function OrderStatusTracker({ order, refreshCount = 0 }: OrderStatusTrackerProps) {
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null)
 
   const steps: StatusStep[] = [

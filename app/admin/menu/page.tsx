@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useMenuItems } from "@/hooks/admin/useMenuItems";
+import { useMenuItems, MenuItem } from "@/hooks/admin/useMenuItems";
 import { AddMenuDialog } from "@/components/add-menu-dialog";
 import AdminSkeleton from "@/components/admin-skeleton";
 
@@ -12,13 +12,11 @@ export default function MenuManagementPage() {
   const { items, loading, refetch } = useMenuItems();
   const [openCreate, setOpenCreate] = useState(false);
   const [type, setType] = useState('Add');
-  const [selectedItem, setSelectedItem] = useState(null)
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
 
   if (loading) return <AdminSkeleton />
 
-  const openItemModal = (type: string, item: any | null) => {
-    console.log(item)
-
+  const openItemModal = (type: string, item: MenuItem | null) => {
     setType(type);
     setSelectedItem(item);
     setOpenCreate(true);
@@ -59,14 +57,23 @@ export default function MenuManagementPage() {
                     <tr key={item.id} className="border-b hover:bg-muted/30">
                       <td className="py-4 px-4 font-medium">{item.name}</td>
                       <td className="py-4 px-4 text-muted-foreground">{item.category ?? "-"}</td>
-                      <td className="py-4 px-4">{item.price}</td>
+                      <td className="py-4 px-4">₱{Number(item.price).toFixed(2)}</td>
 
                       <td className="py-4 px-4 flex gap-2">
                         <Button size="icon" variant="outline" onClick={() => openItemModal('Edit', item)}>
                           <Edit2 className="w-4 h-4" />
                         </Button>
 
-                        <Button size="icon" variant="outline" className="text-destructive">
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="text-destructive"
+                          onClick={() => {
+                            if (confirm(`Delete "${item.name}"?`)) {
+                              // TODO: wire deleteMenuItem API when available
+                            }
+                          }}
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </td>

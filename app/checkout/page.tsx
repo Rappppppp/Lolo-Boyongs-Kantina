@@ -82,6 +82,7 @@ export default function CheckoutPage() {
       phoneNumber,
       address,
       notes,
+      paymentMethod: "gcash" as const,
       gcashRef,
       items: cartItems,
     }
@@ -166,7 +167,13 @@ export default function CheckoutPage() {
                   />
 
                   <Label className="mb-1">GCash Ref. No <span className="text-red-500">*</span></Label>
-                  <Input placeholder="Enter the reference number" type="text" required />
+                  <Input
+                    placeholder="Enter the reference number"
+                    type="text"
+                    value={gcashRef}
+                    onChange={(e) => setGcashRef(e.target.value)}
+                    required
+                  />
                   <QrPaymentDialog />
                 </CardContent>
               </Card>

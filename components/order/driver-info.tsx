@@ -65,7 +65,7 @@ export default function DriverInfo({ order }: OrderProps) {
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">Assigning a Rider</h3>
             <p className="text-sm text-muted-foreground mb-6">
-              We're looking for an available driver to pick up your order
+              We&apos;re looking for an available driver to pick up your order
             </p>
 
             {/* Animated dots */}
@@ -83,7 +83,7 @@ export default function DriverInfo({ order }: OrderProps) {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              You'll receive a notification when a driver accepts
+              You&apos;ll receive a notification when a driver accepts
             </p>
           </div>
         </>

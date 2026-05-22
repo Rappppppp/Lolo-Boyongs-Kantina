@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useApi } from "@/hooks/use-api";
 
 export interface MenuImage {
@@ -31,7 +31,7 @@ export function useMenuItems() {
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
-  const fetchMenuItems = async () => {
+  const fetchMenuItems = useCallback(async () => {
     try {
       const response = await callApi();
       if (response?.data) {
@@ -43,11 +43,11 @@ export function useMenuItems() {
       console.error("Failed to fetch menu items:", err);
       return [];
     }
-  };
+  }, [callApi]);
 
   useEffect(() => {
     fetchMenuItems();
-  }, []);
+  }, [fetchMenuItems]);
 
   return {
     menuItems,

@@ -259,7 +259,7 @@ export default function Home() {
                       <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <p className="text-foreground mb-6 text-lg italic">"{testimonial.content}"</p>
+                  <p className="text-foreground mb-6 text-lg italic">&ldquo;{testimonial.content}&rdquo;</p>
                   <div className="flex items-center gap-4">
                     <div>
                       <div className="font-semibold text-foreground">{testimonial.name}</div>

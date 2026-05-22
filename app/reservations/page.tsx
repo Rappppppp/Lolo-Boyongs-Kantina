@@ -49,15 +49,11 @@ export default function ReservationsPage() {
   }, [user, router]);
 
   useEffect(() => {
-    if (!isReady) return;
-  }, []);
-
-  useEffect(() => {
-
     fetchReservations()
       .then((res) => {
         setReservations(res)
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 
@@ -331,7 +327,7 @@ export default function ReservationsPage() {
                   </Button>
 
                   <p className="text-center text-sm text-muted-foreground">
-                    We'll send you a confirmation email immediately after booking.
+                    We&apos;ll send you a confirmation email immediately after booking.
                   </p>
                 </form>
               </CardContent>

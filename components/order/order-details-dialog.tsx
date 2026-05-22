@@ -285,6 +285,9 @@ export function OrderDetailsDialog({
                                                 {selectedOrder.rider.first_name}  {selectedOrder.rider.last_name}
                                             </p>
                                             <p className="text-xs text-green-700 dark:text-green-300">
+                                                {selectedOrder.rider.email}
+                                            </p>
+                                            <p className="text-xs text-green-700 dark:text-green-300">
                                                 {selectedOrder.rider.phone_number}
                                             </p>
                                         </div>

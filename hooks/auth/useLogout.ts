@@ -1,35 +1,24 @@
 "use client";
 
 import { useApi } from "@/hooks/use-api";
-import { useStore } from "@/lib/store";
 import Cookies from "js-cookie";
 
 export function useLogout() {
-  // Prepare API caller — adjust to your actual logout endpoint
-  const { loading, error, callApi } = useApi("/logout", "POST");
-
-  const { setUser } = useStore();
+  const { loading, error, callApi } = useApi("/logout");
 
   const logout = async () => {
     try {
-      // Try to notify backend (optional, depending on your Laravel config)
-      await callApi();
-
+      // Notify backend to invalidate the token
+      await callApi({ method: "POST" });
     } catch (e) {
       // Don't block logout on API failure — still continue clearing session
       console.warn("Logout API failed, continuing cleanup.");
     }
 
-    // Remove token
+    // Remove token and user cookies
     Cookies.remove("token");
-
-    // Clear Zustand user state
-    setUser(null);
+    Cookies.remove("user");
   };
 
-  return {
-    loading,
-    error,
-    logout,
-  };
+  return { loading, error, logout };
 }

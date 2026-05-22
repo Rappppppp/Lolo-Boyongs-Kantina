@@ -5,9 +5,9 @@ import { useApi } from "@/hooks/use-api";
 import { useStore } from "@/lib/store";
 
 export function useCategories() {
-  const getApi = useApi("/admin/category");
-  const postApi = useApi("/admin/category");
-  const putApi = useApi("/admin/category");
+  const { callApi: getCallApi } = useApi("/admin/category");
+  const { callApi: postCallApi } = useApi("/admin/category");
+  const { callApi: putCallApi } = useApi("/admin/category");
 
   const { categories, setCategories, updateCategory: updateCategoryStore } = useStore();
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ export function useCategories() {
     setError(null);
 
     try {
-      const data = await getApi.callApi();
+      const data = await getCallApi();
       setCategories(data);
     } catch (err: any) {
       console.error("Failed to fetch categories", err);
@@ -26,18 +26,17 @@ export function useCategories() {
     } finally {
       setLoading(false);
     }
-  }, [getApi, setCategories]);
+  }, [getCallApi, setCategories]);
 
   const addCategory = useCallback(
     async (name: string, description: string) => {
-      // setLoading(true);
       setError(null);
 
       try {
-        const res = await postApi.callApi({ body: {
+        const res = await postCallApi({
           method: "POST",
-          name, description
-        } });
+          body: { name, description },
+        });
 
         setCategories([...categories, res.data]);
 
@@ -50,14 +49,13 @@ export function useCategories() {
         setLoading(false);
       }
     },
-    [postApi, categories, setCategories]
+    [postCallApi, categories, setCategories]
   );
 
   const updateCategory = useCallback(
     async (id: number, name: string, description: string) => {
       try {
-        // Perform PUT request to dynamic URL
-        const updated = await putApi.callApi({
+        const updated = await putCallApi({
           method: "PUT",
           body: { name, description },
           urlOverride: `/admin/category/${id}`,
@@ -71,13 +69,14 @@ export function useCategories() {
         throw err;
       }
     },
-    [categories, setCategories, putApi]
+    [putCallApi, updateCategoryStore]
   );
 
   useEffect(() => {
     if (categories.length === 0) {
       fetchCategories();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

@@ -28,7 +28,7 @@ export default function AdminLayout({
     if (user === undefined) return;
 
     if (!user || user.role !== "admin") {
-      router.back(); // replace so user can't go back with back button
+      router.replace("/login"); // redirect non-admins to login
       return;
     }
 
@@ -49,7 +49,11 @@ export default function AdminLayout({
     // { href: "settings", icon: Settings, label: "Settings" },
   ]
 
-  if (!isReady) return null;
+  if (!isReady) return (
+    <div className="flex h-screen items-center justify-center">
+      <span className="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent" />
+    </div>
+  );
   return (
     <div className="flex h-screen bg-white">
       {/* Sidebar */}

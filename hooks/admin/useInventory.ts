@@ -54,6 +54,7 @@ export function useInventory() {
     const reorderInventory = useCallback(
         async (itemIds: number[]) => {
             if (!itemIds.length) return
+            setLoading(true)
             try {
                 await postApi.callApi({ body: { items: itemIds }, method: "POST" })
                 toast({
@@ -76,13 +77,14 @@ export function useInventory() {
 
     const addItem = useCallback(
         async (item: Omit<InventoryItem, "id" | "status">) => {
+            setLoading(true)
             try {
                 const newItem: InventoryItem = {
                     ...item,
                     status: getInventoryStatus(item.current_stock, item.reorder_level),
                     id: Math.max(0, ...inventory.map(i => i.id)) + 1, // temporary ID for FE store
                 }
-                await postApi.callApi({ body: newItem })
+                await postApi.callApi({ method: "POST", body: newItem })
 
                 // Update Zustand store immediately
                 addInventory(newItem)
@@ -109,6 +111,7 @@ export function useInventory() {
 
     const updateItem = useCallback(
         async (id: number, item: Omit<InventoryItem, "id" | "status">) => {
+            setLoading(true)
             try {
                 const updatedItem: InventoryItem = {
                     ...item,
@@ -146,16 +149,15 @@ export function useInventory() {
     )
 
     useEffect(() => {
-        if (!inventory || inventory.length === 0) {
-            fetchInventory().catch((err) =>
-                toast({
-                    title: "Failed to load inventory",
-                    description: err.message,
-                    variant: "destructive",
-                })
-            )
-        }
-    }, [fetchInventory, inventory, toast])
+        fetchInventory().catch((err) =>
+            toast({
+                title: "Failed to load inventory",
+                description: err?.message ?? "Unknown error",
+                variant: "destructive",
+            })
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return {
         inventory,
