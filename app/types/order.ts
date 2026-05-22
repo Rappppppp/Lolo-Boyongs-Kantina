@@ -24,5 +24,7 @@ export type Order = {
   receipient_name?: string;
   phone_number?: string;
   address?: string;
-  email?: string
+  email?: string;
+
+  rider_rating?: number | null;
 };

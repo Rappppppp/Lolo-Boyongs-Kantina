@@ -9,6 +9,7 @@ import { Geist } from "next/font/google";
 import Navigation from "@/components/navigation";
 import OrderCart from "@/components/order-cart";
 import { usePathname } from "next/navigation";
+import { Boyong } from "@/components/chatbot/boyong";
 
 const geist = Geist({ subsets: ["latin"], weight: "400" });
 
@@ -44,7 +45,10 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
         <>
           {
             user?.role !== 'rider' &&
-            <Navigation onCartClick={() => setCartOpen(!cartOpen)} />
+            <>
+              <Navigation onCartClick={() => setCartOpen(!cartOpen)} />
+              <Boyong />
+            </>
           }
 
           {/* Cart Sidebar */}

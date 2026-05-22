@@ -8,23 +8,17 @@ import { CreateReservationPayload, Reservation, UpdateReservationPayload } from 
 export function useReservation() {
   const [loading, setLoading] = useState(false);
 
-  // GET /reservation
-  const listApi = useApi<{ data: Reservation[] }>("/reservation");
-
-  // POST /reservation
-  const createApi = useApi<{ message: string; reservation: Reservation }>("/reservation");
-
-  // PUT /reservation/:id
-  const updateApi = useApi<{ message: string; reservation: Reservation }>("/reservation");
-
-  // DELETE /reservation/:id
-  const deleteApi = useApi<{ message: string }>("/reservation");
+  // Destructure stable callApi references from each API instance
+  const { callApi: listCallApi } = useApi<{ data: Reservation[] }>("/reservation");
+  const { callApi: createCallApi } = useApi<{ message: string; reservation: Reservation }>("/reservation");
+  const { callApi: updateCallApi } = useApi<{ message: string; reservation: Reservation }>("/reservation");
+  const { callApi: deleteCallApi } = useApi<{ message: string }>("/reservation");
 
   // ✅ Fetch reservations
   const fetchReservations = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await listApi.callApi();
+      const res = await listCallApi();
       return res.data;
     } catch (err: any) {
       toast.error(err?.message || "Failed to fetch reservations");
@@ -32,14 +26,14 @@ export function useReservation() {
     } finally {
       setLoading(false);
     }
-  }, [listApi]);
+  }, [listCallApi]);
 
   // ✅ Create reservation
   const createReservation = useCallback(
     async (payload: CreateReservationPayload) => {
       setLoading(true);
       try {
-        const res = await createApi.callApi({
+        const res = await createCallApi({
           method: "POST",
           body: payload,
         });
@@ -52,16 +46,17 @@ export function useReservation() {
         setLoading(false);
       }
     },
-    [createApi]
+    [createCallApi]
   );
 
   // ✅ Update reservation
   const updateReservation = useCallback(
-    async (payload: UpdateReservationPayload) => {
+    async (payload: UpdateReservationPayload & { reservation_id: number }) => {
       setLoading(true);
       try {
-        const res = await updateApi.callApi({
+        const res = await updateCallApi({
           method: "PUT",
+          urlOverride: `/reservation/${payload.reservation_id}`,
           body: payload,
         });
         toast.success("Reservation updated successfully!");
@@ -73,7 +68,7 @@ export function useReservation() {
         setLoading(false);
       }
     },
-    [updateApi]
+    [updateCallApi]
   );
 
   // ✅ Delete reservation
@@ -81,7 +76,7 @@ export function useReservation() {
     async (reservation_id: number) => {
       setLoading(true);
       try {
-        await deleteApi.callApi({
+        await deleteCallApi({
           method: "DELETE",
           body: { reservation_id },
         });
@@ -93,7 +88,7 @@ export function useReservation() {
         setLoading(false);
       }
     },
-    [deleteApi]
+    [deleteCallApi]
   );
 
   return {
@@ -101,6 +96,6 @@ export function useReservation() {
     createReservation,
     updateReservation,
     deleteReservation,
-    loading: loading || listApi.loading || createApi.loading || updateApi.loading || deleteApi.loading,
+    loading,
   };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import OrderStatusTracker from '@/components/order/order-status-tracker';
 import OrderDetails from '@/components/order/order-details';
 import DriverInfo from '@/components/order/driver-info';
@@ -9,52 +9,41 @@ import { useSearchParams } from 'next/navigation';
 import { useGetOrderStatus } from '@/hooks/client/useGetOrderStatus';
 
 import { Order } from '@/app/types/order';
+import { Button } from '@/components/ui/button';
+import CancelOrderDialog from '@/components/order/client-cancel-order';
 
-export default function OrderStatusPage() {
+function OrderStatusContent() {
     const searchParams = useSearchParams();
     const orderId = searchParams.get('orderId');
 
     const { data, getOrderStatus } = useGetOrderStatus();
     const [order, setOrder] = useState<Order | null>(null);
-    const [refreshCount, setRefreshCount] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
-    if (!orderId) {
-        return (
-            <div className="p-8 text-center text-red-600">
-                Order ID is missing in the URL.
-            </div>
-        );
-    }
-
-    // Stable reference to the fetch function
+    // Stable fetch function — orderId is all we need; do NOT add `order` here
+    // as that would restart the polling interval on every successful response
     const fetchOrder = useCallback(async () => {
+        if (!orderId) return;
         try {
-            console.log('Fetching order:', orderId);
             const res = await getOrderStatus(orderId);
-            console.log('Response:', res);
             
             if (!res?.data) {
-                console.error('No data in response:', res);
                 setError('No order data received');
                 setIsLoading(false);
                 return;
             }
 
             const newData = res.data;
-            console.log('Order data:', newData);
             
             const stored = sessionStorage.getItem(`orderId=${orderId}`);
             const storedData = stored ? JSON.parse(stored) : null;
 
-            // Only update if changed
-            if (!storedData || storedData.status !== newData.status) {
+            // Only update if changed (avoids unnecessary re-renders)
+            if (!storedData || storedData.status !== newData.status || !order) {
                 setOrder(newData);
                 sessionStorage.setItem(`orderId=${orderId}`, JSON.stringify(newData));
-            } else if (!order) {
-                // First load - set order even if it matches storage
-                setOrder(newData);
             }
             
             setIsLoading(false);
@@ -64,9 +53,10 @@ export default function OrderStatusPage() {
             setError(err instanceof Error ? err.message : 'Failed to fetch order');
             setIsLoading(false);
         }
-    }, [orderId, order]); // Add order to dependencies
+    }, [orderId, getOrderStatus]); // intentionally omits `order` to keep interval stable
 
     useEffect(() => {
+        if (!orderId) return;
         // Initial fetch
         fetchOrder();
 
@@ -76,7 +66,15 @@ export default function OrderStatusPage() {
         return () => {
             clearInterval(interval);
         };
-    }, [fetchOrder]);
+    }, [fetchOrder, orderId]);
+
+    if (!orderId) {
+        return (
+            <div className="p-8 text-center text-red-600">
+                Order ID is missing in the URL.
+            </div>
+        );
+    }
 
     if (error) {
         return (
@@ -91,8 +89,12 @@ export default function OrderStatusPage() {
     }
 
     return (
+        <>
+        <CancelOrderDialog selectedOrder={order} isCancelDialogOpen={cancelDialogOpen} setIsCancelDialogOpen={setCancelDialogOpen} setSelectedOrder={setOrder} />
+
         <div className="min-h-screen bg-gradient-to-br from-white to-orange-50">
             <div className="container mx-auto px-4 py-8">
+                <div>{order.status === 'pending' && <Button onClick={() => setCancelDialogOpen(true)} variant='destructive' className='mb-4' size='lg'>Cancel Order</Button>}</div>
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
@@ -111,7 +113,6 @@ export default function OrderStatusPage() {
                     <div className="space-y-6">
                         <OrderStatusTracker
                             order={order}
-                            refreshCount={refreshCount}
                         />
                         <DriverInfo order={order} />
                         <OrderDetails order={order} />
@@ -120,5 +121,14 @@ export default function OrderStatusPage() {
                 </div>
             </div>
         </div>
+        </>
+    );
+}
+
+export default function OrderStatusPage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading...</div>}>
+            <OrderStatusContent />
+        </Suspense>
     );
 }

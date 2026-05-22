@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Plus, Edit2, Trash2 } from "lucide-react"
 import debounce from 'debounce';
 import { z } from "zod"
@@ -29,9 +29,10 @@ import { Role, User } from "@/app/types/user"
 import { userSchema } from "@/lib/schemas"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+type UserForm = z.infer<typeof userSchema>
+
 export default function UsersTablePage() {
     const { fetchUsers, createUser, updateUser, deleteUser, loading, error } = useUsers()
-    type UserForm = z.infer<typeof userSchema>
 
     const [users, setUsers] = useState<User[]>([])
     const [open, setOpen] = useState(false)
@@ -53,20 +54,26 @@ export default function UsersTablePage() {
 
     const { toast } = useToast()
 
-    const handleSearch = debounce((value: string) => {
-        setPage(1);
-        setSearch(value);
-    }, 400);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const handleSearch = useMemo(
+        () => debounce((value: string) => {
+            setPage(1);
+            setSearch(value);
+        }, 400),
+        [],
+    );
 
     // Load users
     useEffect(() => {
         fetchUsers({ page, search })
             .then(res => {
                 setUsers(res.data);
-                setTotalPages(res.meta?.last_page);
+                setTotalPages(res.meta?.last_page ?? 1);
             })
             .catch(console.error);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, search]);
+
     // Open create form
     const openCreate = () => {
         setEditingUser(null)
@@ -140,7 +147,7 @@ export default function UsersTablePage() {
     }
 
     // Render
-    if (loading) return <AdminSkeleton />
+    // if (loading) return <AdminSkeleton />
 
     return (
         <div className="space-y-6">
@@ -161,6 +168,8 @@ export default function UsersTablePage() {
                 </div>
             </div>
 
+            {loading ? <AdminSkeleton /> :
+            
             <Card>
                 <CardHeader>
                     <CardTitle>Users ({users.length})</CardTitle>
@@ -228,6 +237,8 @@ export default function UsersTablePage() {
                     </div>
                 </CardContent>
             </Card>
+            }
+
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>

@@ -1,19 +1,15 @@
+import { useCallback } from "react";
 import { useApi } from "@/hooks/use-api";
-// import { useStore } from "@/lib/store";
 
 export const useGetOrderStatus = () => {
     const { data, loading, error, callApi } = useApi("/ordering");
 
-    const getOrderStatus = async (orderId: string) => {
-
+    const getOrderStatus = useCallback(async (orderId: string) => {
         const response = await callApi({
             urlOverride: `/ordering/${orderId}`
         })
-
-        // console.log("Order Status Response:", response);
-
         return response
-    }
+    }, [callApi]);
 
     return {
         getOrderStatus,

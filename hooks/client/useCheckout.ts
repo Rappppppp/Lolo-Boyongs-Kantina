@@ -1,3 +1,4 @@
+import { Order } from "@/app/types/order";
 import { useApi } from "@/hooks/use-api";
 import { useStore } from "@/lib/store";
 
@@ -8,7 +9,9 @@ export const useCheckout = () => {
         email: string
         phoneNumber: string
         address: string
-        gcashRef: string
+        notes?: string
+        paymentMethod: "cash" | "gcash" | "card"
+        gcashRef?: string
         items: typeof cartItems
     }
 
@@ -21,7 +24,9 @@ export const useCheckout = () => {
             email: checkoutPayload.email,
             phone_number: checkoutPayload.phoneNumber,
             street_address: checkoutPayload.address,
-            gcash_ref: checkoutPayload.gcashRef,
+            notes: checkoutPayload.notes ?? null,
+            payment_method: checkoutPayload.paymentMethod,
+            gcash_ref: checkoutPayload.gcashRef ?? null,
             menu_items: checkoutPayload.items.map(item => ({
                 id: item.id,
                 qty: item.quantity,
@@ -30,8 +35,12 @@ export const useCheckout = () => {
 
         const response = await callApi({ method: 'POST', body: payload })
 
-        if (response?.order) {
-            clearCart()
+        if (
+            typeof response === "object" &&
+            response !== null &&
+            "order" in response
+        ) {
+            clearCart();
         }
 
         return response

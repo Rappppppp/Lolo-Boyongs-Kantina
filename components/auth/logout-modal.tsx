@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useStore } from "@/lib/store";
 import { useLogout } from "@/hooks/auth/useLogout";
 import Cookies from 'js-cookie'
@@ -20,20 +20,18 @@ export default function LogoutModal({ children }: LogoutModalProps) {
   const { toast } = useToast();
 
   const handleLogout = async () => {
-    console.log('logout')
+    await logout(); // call API first
     setUser(null); // clear user from store
-    setOpen(false); // close modal
     Cookies.remove('user');
     Cookies.remove('token');
+    setOpen(false);
     router.push("/login");
     toast({
       title: "You have been logged out",
       description: "You can now log in again",
       className: "bg-green-500 text-white border-green-600",
-      duration: 3000, // 3 seconds
+      duration: 3000,
     });
-
-    await logout();
   };
 
   return (
@@ -56,10 +54,7 @@ export default function LogoutModal({ children }: LogoutModalProps) {
           </Button>
           <Button
             variant="destructive"
-            onClick={async () => {
-              setOpen(false);
-              await handleLogout();
-            }}
+            onClick={handleLogout}
           >
             Logout
           </Button>

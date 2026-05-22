@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useApi } from "@/hooks/use-api";
 
 export interface MenuImage {
@@ -37,15 +37,14 @@ export interface CreateMenuItemPayload {
 
 export function useMenuItems() {
   const { data, loading, error, callApi } = useApi<PaginatedResponse<MenuItem>>(
-    "/admin/menu-item",
-    "GET"
+    "/admin/menu-item"
   );
 
-  const fetchMenuItems = async () => {
+  const fetchMenuItems = useCallback(async () => {
     return await callApi();
-  };
+  }, [callApi]);
 
-  const createMenuItem = async (payload: CreateMenuItemPayload) => {
+  const createMenuItem = useCallback(async (payload: CreateMenuItemPayload) => {
     let body: any = payload;
     let isFormData = false;
 
@@ -72,11 +71,11 @@ export function useMenuItems() {
     }
 
     return await callApi({ body, isFormData });
-  };
+  }, [callApi]);
 
   useEffect(() => {
     fetchMenuItems();
-  }, []);
+  }, [fetchMenuItems]);
 
   return {
     items: data?.data ?? [],

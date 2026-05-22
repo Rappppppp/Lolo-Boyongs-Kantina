@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,7 @@ import { useLogin } from "@/hooks/auth/useLogin"
 import { useStore } from "@/lib/store"
 import Cookies from 'js-cookie'
 
-export default function LoginPage() {
+function LoginContent() {
   const { loading, login } = useLogin();
 
   const [email, setEmail] = useState("")
@@ -31,14 +31,28 @@ export default function LoginPage() {
   const { user } = useStore();
 
   useEffect(() => {
-    if (
-      Cookies.get('user') || 
-      Cookies.get('token') ||
-      !!user
-    ) {
-      router.push('/')
+    // Read role from cookie (most up-to-date source) or Zustand store
+    const cookieVal = Cookies.get('user');
+    let role: string | undefined;
+
+    if (cookieVal) {
+      try { role = JSON.parse(cookieVal)?.role; } catch { /* ignore */ }
     }
 
+    if (!role && user) {
+      role = user.role;
+    }
+
+    if (!role) return; // not logged in — stay on login page
+
+    // Role-aware redirect so a stale rider/admin cookie doesn't misdirect
+    if (role === 'rider') {
+      router.push('/rider');
+    } else if (role === 'admin') {
+      router.push('/admin');
+    } else {
+      router.push(redirect || '/');
+    }
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,8 +75,17 @@ export default function LoginPage() {
 
     // --- API REQUEST ---
     try {
-      await login(email, password);
-      router.push(redirect || "/");
+      const res = await login(email, password);
+
+      // Redirect based on role so riders/admins land on their own home
+      const role = res?.user?.role;
+      if (role === 'rider') {
+        router.push('/rider');
+      } else if (role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push(redirect || '/');
+      }
     } catch (err: any) {
 
       // --- Laravel validation errors ---
@@ -158,7 +181,7 @@ export default function LoginPage() {
 
             <div className="mt-6 text-center space-y-2">
               <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Link href="/register" className="text-primary hover:underline font-medium">
                   Sign up here
                 </Link>
@@ -171,5 +194,13 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   )
 }
