@@ -35,6 +35,7 @@ const STATUS_CFG: Record<string, { label: string; dot: string; badge: string }> 
   delivered: { label: "Delivered",  dot: "bg-emerald-400", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
   completed: { label: "Completed",  dot: "bg-emerald-400", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
   cancelled: { label: "Cancelled",  dot: "bg-rose-400",    badge: "bg-rose-50 text-rose-700 border-rose-200" },
+  canceled:  { label: "Cancelled",  dot: "bg-rose-400",    badge: "bg-rose-50 text-rose-700 border-rose-200" },
   pending:   { label: "Pending",    dot: "bg-muted-foreground/40", badge: "bg-muted text-muted-foreground border-border" },
   confirmed: { label: "Confirmed",  dot: "bg-blue-400",    badge: "bg-blue-50 text-blue-700 border-blue-200" },
   ready:     { label: "Ready",      dot: "bg-violet-400",  badge: "bg-violet-50 text-violet-700 border-violet-200" },

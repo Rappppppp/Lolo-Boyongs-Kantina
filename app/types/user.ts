@@ -18,4 +18,7 @@ export type User = {
     barangay?: string;
 
     role: Role;
+
+    // Number of orders/deliveries assigned (for riders)
+    orders_count?: number;
 }

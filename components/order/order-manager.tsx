@@ -15,17 +15,22 @@ import { usePathname, useRouter } from "next/navigation"
 
 type OrderStatus = "pending" | "confirmed" | "otw" | "delivered" | "cancelled"
 
-const statusConfig: Record<OrderStatus, {
+const statusConfig: Record<string, {
   label: string
   icon: React.ForwardRefExoticComponent<any>
   color: string
 }> = {
-  pending: { label: "Pending", icon: Clock, color: "bg-gray-100 text-gray-800" },
-  confirmed: { label: "Confirmed", icon: Check, color: "bg-green-100 text-green-800" },
-  otw: { label: "On the Way", icon: Truck, color: "bg-blue-100 text-blue-800" },
-  delivered: { label: "Completed", icon: Check, color: "bg-green-100 text-green-800" },
-  cancelled: { label: "Cancelled", icon: X, color: "bg-red-100 text-red-800" },
+  pending:   { label: "Pending",    icon: Clock,  color: "bg-gray-100 text-gray-800" },
+  confirmed: { label: "Confirmed",  icon: Check,  color: "bg-green-100 text-green-800" },
+  otw:       { label: "On the Way", icon: Truck,  color: "bg-blue-100 text-blue-800" },
+  delivered: { label: "Completed",  icon: Check,  color: "bg-green-100 text-green-800" },
+  completed: { label: "Completed",  icon: Check,  color: "bg-green-100 text-green-800" },
+  ready:     { label: "Ready",      icon: Clock,  color: "bg-yellow-100 text-yellow-800" },
+  cancelled: { label: "Cancelled",  icon: X,      color: "bg-red-100 text-red-800" },
 }
+
+const filterStatuses = ["confirmed", "otw", "delivered", "cancelled"] as const
+type FilterStatus = typeof filterStatuses[number]
 
 
 const statusFlow = {
@@ -36,7 +41,7 @@ const statusFlow = {
 }
 
 export function OrdersManager() {
-    const [filter, setFilter] = useState<"all" | keyof typeof statusConfig>("all")
+    const [filter, setFilter] = useState<"all" | FilterStatus | "pending">("all")
     const [orders, setOrders] = useState<Order[]>([])
     const [riders, setRiders] = useState<User[]>([])
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
@@ -124,7 +129,7 @@ export function OrdersManager() {
                 <h2 className="text-3xl font-bold mb-4">Order Management</h2>
 
                 <div className="flex gap-2 flex-wrap">
-                    {["all", ...Object.keys(statusConfig)].map(status => (
+                    {(["all", ...filterStatuses] as const).map(status => (
                         <Button
                             key={status}
                             variant={filter === status ? "default" : "outline"}
@@ -133,8 +138,7 @@ export function OrdersManager() {
                         >
                             {status === "all"
                                 ? `All Orders (${orderCounts.all})`
-                                : `${statusConfig[status as keyof typeof statusConfig].label}
-                   (${orderCounts[status as keyof typeof orderCounts]})`}
+                                : `${statusConfig[status].label} (${orderCounts[status as keyof typeof orderCounts] ?? 0})`}
                         </Button>
                     ))}
                 </div>
@@ -164,7 +168,7 @@ export function OrdersManager() {
                     ) : (
                         <div className="space-y-3">
                             {filteredOrders.map(order => {
-                                const config = statusConfig[order.status as OrderStatus]
+                                const config = statusConfig[order.status] ?? statusConfig.pending
 
                                 return (
                                     <div

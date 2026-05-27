@@ -180,7 +180,9 @@ export default function UsersTablePage() {
                             <tr>
                                 <th className="text-left p-3">Name</th>
                                 <th className="text-left p-3">Email</th>
+                                <th className="text-left p-3">Phone</th>
                                 <th className="text-left p-3">Role</th>
+                                <th className="text-left p-3">Orders</th>
                                 <th className="text-left p-3">Actions</th>
                             </tr>
                         </thead>
@@ -189,7 +191,13 @@ export default function UsersTablePage() {
                                 <tr key={user.id} className="border-b hover:bg-muted/30">
                                     <td className="p-3 font-medium">{user.first_name} {user.last_name}</td>
                                     <td className="p-3 text-muted-foreground">{user.email}</td>
+                                    <td className="p-3 text-muted-foreground">{user.phone_number ?? <span className="text-muted-foreground/40">—</span>}</td>
                                     <td className="p-3">{user.role?.toUpperCase() ?? "N/A"}</td>
+                                    <td className="p-3 text-center">
+                                        {user.role === "rider"
+                                            ? (user.orders_count != null ? user.orders_count : <span className="text-muted-foreground/40">—</span>)
+                                            : <span className="text-muted-foreground/40">—</span>}
+                                    </td>
                                     <td className="p-3 flex gap-2">
                                         {/* Edit button */}
                                         <Button

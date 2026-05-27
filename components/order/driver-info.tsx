@@ -21,6 +21,15 @@ export default function DriverInfo({ order }: OrderProps) {
             <div>
               <h3 className="text-sm text-muted-foreground">Your Rider</h3>
               <p className="text-lg font-semibold text-foreground">{order.rider.first_name} {order.rider.last_name}</p>
+              {order.rider.phone_number && (
+                <a
+                  href={`tel:${order.rider.phone_number}`}
+                  className="flex items-center gap-1.5 text-sm text-primary mt-1 hover:underline"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  {order.rider.phone_number}
+                </a>
+              )}
             </div>
             {/* <div className="text-right">
               <div className="flex items-center gap-1">

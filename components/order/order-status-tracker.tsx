@@ -71,7 +71,7 @@ export default function OrderStatusTracker({ order, refreshCount = 0 }: OrderSta
               {/* Connector */}
               {index !== 0 && (
                 <div
-                  className={`absolute top-7 -left-1/2 w-full h-1 transition-colors ${isCompleted ? "bg-primary" : "bg-gray-200"
+                  className={`absolute top-7 -left-1/2 w-full h-1 transition-colors ${isCompleted || isCurrent ? "bg-primary" : "bg-gray-200"
                     }`}
                 />
               )}
